@@ -1,0 +1,30 @@
+[versions]
+paper = "1.21.3-R0.1-SNAPSHOT"
+
+core = "1.0.0"
+
+luckperms = "5.4"
+
+evelon = "1.0.46-SNAPSHOT"
+
+lombok = "1.18.36"
+
+shadow = "8.1.1"
+plugindescription = "0.6.0"
+paperweight = "1.7.5"
+
+[plugins]
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow"}
+plugindescription = { id = "net.minecrell.plugin-yml.paper", version.ref = "plugindescription" }
+paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
+
+[libraries]
+paper = { group = "io.papermc.paper", name = "paper-api", version.ref = "paper" }
+
+core = { group = "de.smoofy.core", name = "core-api", version.ref = "core" }
+
+luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
+
+evelon = { group = "dev.httpmarco.evelon", name = "evelon-sql-mariadb", version.ref = "evelon" }
+
+lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }
