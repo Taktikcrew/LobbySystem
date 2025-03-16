@@ -1,8 +1,10 @@
-import net.minecrell.pluginyml.paper.PaperPlugin
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
     id("java")
+    id("java-library")
+    id("xyz.jpenilla.run-paper") version "2.3.1"
+
     alias(libs.plugins.shadow)
     alias(libs.plugins.plugindescription)
     alias(libs.plugins.paperweight)
@@ -16,6 +18,15 @@ repositories {
     mavenLocal()
 
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+
+    maven {
+        url = uri("https://maven.pkg.github.com/smoofy19/SmoofyCore")
+        credentials {
+            username = project.findProperty("gpr.user").toString()
+            password = project.findProperty("gpr.token").toString()
+        }
+    }
 }
 
 dependencies {
@@ -26,6 +37,8 @@ dependencies {
     compileOnly(libs.core)
 
     compileOnly(libs.luckperms)
+
+    compileOnly(libs.evelon)
 
     annotationProcessor(libs.lombok)
     compileOnly(libs.lombok)
@@ -44,8 +57,11 @@ tasks.shadowJar {
     }
 }
 
-tasks.assemble {
-    dependsOn(tasks.reobfJar)
+tasks.runServer {
+    // Configure the Minecraft version for our task.
+    // This is the only required configuration besides applying the plugin.
+    // Your plugin's jar (or shadowJar if present) will be used automatically.
+    minecraftVersion("1.21.4")
 }
 
 paper {
