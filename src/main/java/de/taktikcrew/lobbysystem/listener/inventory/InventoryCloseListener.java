@@ -27,7 +27,7 @@ public class InventoryCloseListener implements Listener {
             return;
         }
         if (event.getInventory().getHolder() instanceof DsgvoInventory.Holder) {
-            Core.instance().coreTask().later(() -> player.openInventory(this.lobby.dsgvoInventory().inventory()), 1);
+            Core.instance().coreTask().later(() -> player.openInventory(this.lobby.inventoryProvider().dsgvoInventory().inventory()), 1);
         }
     }
 }

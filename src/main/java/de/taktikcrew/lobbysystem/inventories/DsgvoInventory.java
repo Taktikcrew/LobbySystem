@@ -2,7 +2,6 @@ package de.taktikcrew.lobbysystem.inventories;
 
 import de.smoofy.core.api.builder.InventoryBuilder;
 import de.smoofy.core.api.builder.ItemBuilder;
-import de.taktikcrew.lobbysystem.Lobby;
 import de.taktikcrew.lobbysystem.database.LobbyPlayerDAO;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -22,14 +21,15 @@ import org.jetbrains.annotations.NotNull;
 @Accessors(fluent = true)
 public class DsgvoInventory {
 
-    private final Lobby lobby;
+    private final InventoryProvider inventoryProvider;
+
     private final LobbyPlayerDAO lobbyPlayerDAO;
 
     private final Inventory inventory;
 
-    public DsgvoInventory(Lobby lobby) {
-        this.lobby = lobby;
-        this.lobbyPlayerDAO = this.lobby.lobbyPlayerDAO();
+    public DsgvoInventory(InventoryProvider inventoryProvider) {
+        this.inventoryProvider = inventoryProvider;
+        this.lobbyPlayerDAO = this.inventoryProvider.lobby().lobbyPlayerDAO();
 
         this.inventory = InventoryBuilder.of(new Holder(), MiniMessage.miniMessage().deserialize("<red><bold>DSGVO"), 3)
                 .fill(ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName())
