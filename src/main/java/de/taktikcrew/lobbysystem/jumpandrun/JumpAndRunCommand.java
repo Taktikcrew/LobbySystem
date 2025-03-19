@@ -91,7 +91,9 @@ public class JumpAndRunCommand implements BasicCommand {
                         this.jumpAndRunManager.checkpoints());
                 this.jumpAndRunManager.jumpAndRunDAO().create(jumpAndRun);
 
-                corePlayer.message(Component.translatable("jar.command.setup.created"));
+                corePlayer.message(Component.translatable("jar.command.setup.created")
+                        .arguments(Component.text(this.jumpAndRunManager.name()), Component.text(this.jumpAndRunManager.builder())));
+
                 this.jumpAndRunManager.setupSteps(new Pair<>(null, null));
                 this.jumpAndRunManager.name(null);
                 this.jumpAndRunManager.builder(null);
@@ -104,17 +106,20 @@ public class JumpAndRunCommand implements BasicCommand {
             }
         } else {
             if (args[0].equalsIgnoreCase("delete")) {
-                this.jumpAndRunManager.jumpAndRun(args[1]).ifPresentOrElse(_ -> {
+                this.jumpAndRunManager.jumpAndRun(args[1]).ifPresentOrElse(jumpAndRun -> {
                     this.jumpAndRunManager.jumpAndRunDAO().delete(args[1]);
-                    corePlayer.message(Component.translatable("jar.command.setup.deleted"));
+                    corePlayer.message(Component.translatable("jar.command.setup.deleted")
+                            .arguments(Component.text(jumpAndRun.name()), Component.text(jumpAndRun.builder())));
+
                 }, () -> corePlayer.message(Component.translatable("jar.command.setup.not_exist")));
             } else if (args[0].equalsIgnoreCase("toggle")) {
                 this.jumpAndRunManager.jumpAndRun(args[1]).ifPresent(jumpAndRun -> {
                     jumpAndRun.playable(!jumpAndRun.playable());
                     this.jumpAndRunManager.jumpAndRunDAO().update(jumpAndRun);
-                    corePlayer.message(jumpAndRun.playable() ?
-                            Component.translatable("jar.command.setup.toggled_on") :
-                            Component.translatable("jar.command.setup.toggled_off"));
+
+                    var key = jumpAndRun.playable() ? "jar.command.setup.toggled_on" : "jar.command.setup.toggled_off";
+                    corePlayer.message(this.jumpAndRunManager.prefix().append(Component.translatable(key)
+                            .arguments(Component.text(jumpAndRun.name()), Component.text(jumpAndRun.builder()))));
                 });
             } else {
                 this.sendUsage(corePlayer);
