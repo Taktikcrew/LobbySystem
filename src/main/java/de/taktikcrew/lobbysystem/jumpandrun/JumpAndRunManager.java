@@ -7,6 +7,8 @@ import de.smoofy.core.api.utils.Pair;
 import de.taktikcrew.lobbysystem.Lobby;
 import de.taktikcrew.lobbysystem.jumpandrun.events.JumpAndRunEnterEvent;
 import de.taktikcrew.lobbysystem.jumpandrun.events.JumpAndRunFinishEvent;
+import de.taktikcrew.lobbysystem.jumpandrun.listener.JumpAndRunEnterListener;
+import de.taktikcrew.lobbysystem.jumpandrun.listener.JumpAndRunFinishListener;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -59,6 +61,8 @@ public class JumpAndRunManager {
 
         new JumpAndRunCommand(this);
         new JumpAndRunListener(this);
+        new JumpAndRunEnterListener(this);
+        new JumpAndRunFinishListener(this);
 
         this.jumpAndRuns = Maps.newHashMap();
         this.jumpAndRunData = Maps.newHashMap();
