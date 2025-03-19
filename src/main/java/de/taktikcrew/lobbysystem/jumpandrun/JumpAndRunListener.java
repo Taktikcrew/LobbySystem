@@ -78,6 +78,10 @@ public class JumpAndRunListener implements Listener {
         }
         switch (this.jumpAndRunManager.setupSteps().value()) {
             case NAME -> {
+                if (this.jumpAndRunManager.jumpAndRuns().containsKey(message)) {
+                    corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.already_exist")));
+                    return;
+                }
                 this.jumpAndRunManager.name(message);
                 corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.name_set")));
                 corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.builder")));
@@ -124,7 +128,7 @@ public class JumpAndRunListener implements Listener {
                 this.jumpAndRunManager.checkpoints().add(corePlayer.location());
                 corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.checkpoint_set")));
                 corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.checkpoint")));
-                corePlayer.message(this.prefix.append(Component.translatable("jar.command.create")));
+                corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.create")));
             }
         }
     }

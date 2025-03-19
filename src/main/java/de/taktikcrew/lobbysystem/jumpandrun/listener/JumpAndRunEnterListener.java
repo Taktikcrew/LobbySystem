@@ -32,15 +32,15 @@ public class JumpAndRunEnterListener implements Listener {
         var jumpAndRun = event.jumpAndRun();
 
         corePlayer.sendTitle(Component.text(jumpAndRun.name(), jumpAndRun.difficulty().color()),
-                Component.translatable("jar.title.entered"), 2, 5, 2);
+                Component.translatable("jar.title.entered"), 1, 3, 1);
 
         corePlayer.message(this.prefix.append(Component.translatable("jar.message.entered")
                 .arguments(Component.text(jumpAndRun.name()), Component.text(jumpAndRun.builder()))));
 
-        corePlayer.message(this.miniMessage.deserialize("<gray>Difficulty<dark_gray>: ")
+        corePlayer.message(this.prefix.append(this.miniMessage.deserialize("<gray>Difficulty<dark_gray>: ")
                 .append(Component.text(jumpAndRun.difficulty().name(), jumpAndRun.difficulty().color()))
                 .append(this.miniMessage.deserialize(" <dark_gray>║ <gray>Checkpoints<dark_gray>: "))
-                .append(Component.text(jumpAndRun.checkpoints().size(), NamedTextColor.DARK_GREEN)));
+                .append(Component.text(jumpAndRun.checkpoints().size(), NamedTextColor.DARK_GREEN))));
 
         corePlayer.inventory().addItem(ItemBuilder.of(Material.HEAVY_WEIGHTED_PRESSURE_PLATE)
                 .name(Component.translatable("lobby.jar.item.checkpoint.name"))

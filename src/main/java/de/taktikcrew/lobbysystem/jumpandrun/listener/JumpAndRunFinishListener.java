@@ -6,6 +6,7 @@ import de.taktikcrew.lobbysystem.utils.Stringify;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -33,7 +34,7 @@ public class JumpAndRunFinishListener implements Listener {
         var titleKey = event.aborted() ? "jar.title.aborted" : "jar.title.finished";
 
         corePlayer.sendTitle(Component.text(jumpAndRun.name(), jumpAndRun.difficulty().color()),
-                Component.translatable(titleKey), 2, 5, 2);
+                Component.translatable(titleKey), 1, 3, 1);
 
         var messageKey = event.aborted() ? "jar.message.aborted" : "jar.message.finished";
 
@@ -42,12 +43,12 @@ public class JumpAndRunFinishListener implements Listener {
 
         var playTime = System.currentTimeMillis() - jumpAndRunData.startTime();
 
-        corePlayer.message(this.miniMessage.deserialize("<gray>Difficulty<dark_gray>: ")
+        corePlayer.message(this.prefix.append(this.miniMessage.deserialize("<gray>Difficulty<dark_gray>: ")
                 .append(Component.text(jumpAndRun.difficulty().name(), jumpAndRun.difficulty().color()))
                 .append(this.miniMessage.deserialize(" <dark_gray>║ <gray>Playtime<dark_gray>: "))
                 .append(Component.text(Stringify.time(playTime), NamedTextColor.DARK_GREEN))
                 .append(this.miniMessage.deserialize(" <dark_gray>║ <gray>Fails<dark_gray>: "))
-                .append(Component.text(jumpAndRunData.fails(), NamedTextColor.DARK_GREEN)));
+                .append(Component.text(jumpAndRunData.fails(), NamedTextColor.DARK_GREEN))));
 
         corePlayer.inventory().clear();
         // todo: set lobby inventory
@@ -58,6 +59,10 @@ public class JumpAndRunFinishListener implements Listener {
         if (jumpAndRun.recordTime() <= playTime) {
             return;
         }
+
+        Bukkit.broadcast(this.prefix.append(Component.translatable("jar.message.new_record")
+                .arguments(corePlayer.displayName(), Component.text(jumpAndRun.name()))));
+
         jumpAndRun.recordTime(playTime);
         this.jumpAndRunManager.jumpAndRunDAO().update(jumpAndRun);
     }

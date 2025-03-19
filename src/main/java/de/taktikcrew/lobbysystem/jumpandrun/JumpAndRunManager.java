@@ -52,7 +52,7 @@ public class JumpAndRunManager {
     public JumpAndRunManager(Lobby lobby) {
         this.lobby = lobby;
 
-        this.prefix = this.miniMessage.deserialize("<dark_gray>[<dark_green>JAR<dark_gray>]");
+        this.prefix = this.miniMessage.deserialize("<dark_gray>[<dark_green>JAR<dark_gray>] ");
 
         this.checkpointKey = NamespacedKey.fromString("back_to_checkpoint");
         this.abortKey = NamespacedKey.fromString("abort");

@@ -39,7 +39,7 @@ public class JumpAndRun {
         this.difficulty = difficulty;
         this.startLocation = this.serialize(startLocation);
         this.endLocation = this.serialize(endLocation);
-        this.recordTime = -1;
+        this.recordTime = Long.MAX_VALUE;
         if (checkpoints != null) {
             this.checkpoints = checkpoints.stream().map(this::serialize).collect(Collectors.toList());
         }
