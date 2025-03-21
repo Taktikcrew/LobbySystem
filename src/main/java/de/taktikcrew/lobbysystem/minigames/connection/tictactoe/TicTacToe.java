@@ -223,7 +223,9 @@ public class TicTacToe extends ConnectionGame {
 
     @Override
     public Inventory createInventory(ICorePlayer corePlayer, ICorePlayer opponent) {
-        return InventoryBuilder.of(Component.translatable("minigame.menu.game.title").arguments(opponent.displayName()), 6)
+        return InventoryBuilder.of(Component.translatable("minigame.menu.game.title")
+                        .arguments(this.type().gameName(), opponent.displayName()), 6)
+
                 .fill(ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName())
                 .clear(12, 13, 14, 21, 22, 23, 30, 31, 32)
                 .set(ItemBuilder.of(Material.PLAYER_HEAD).skullOwner(corePlayer).name(corePlayer.displayName()), 18)

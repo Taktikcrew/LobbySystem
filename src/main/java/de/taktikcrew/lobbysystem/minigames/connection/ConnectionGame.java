@@ -234,7 +234,8 @@ public abstract class ConnectionGame {
     }
 
     public Inventory createInventory(ICorePlayer corePlayer, ICorePlayer opponent) {
-        return InventoryBuilder.of(Component.translatable("minigame.menu.game.title").arguments(opponent.displayName()), 6)
+        return InventoryBuilder.of(Component.translatable("minigame.menu.game.title")
+                        .arguments(this.type.gameName, opponent.displayName()), 6)
 
                 .set(ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName(), 0, 8, 9, 17, 36, 44, 53)
                 .set(ItemBuilder.of(Material.PLAYER_HEAD).skullOwner(corePlayer).name(corePlayer.displayName()), 18)
