@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
+import java.util.Arrays;
 import java.util.Map;
 
 @Getter
@@ -22,7 +23,7 @@ public abstract class AbstractGameManager<T extends ConnectionGame> {
 
     protected final Map<ICorePlayer, T> games;
 
-    public AbstractGameManager(Lobby lobby) {
+    protected AbstractGameManager(Lobby lobby) {
         this.lobby = lobby;
 
         this.prefix = this.miniMessage.deserialize("<dark_gray>[<aqua>MiniGame<dark_gray>] ");
@@ -35,13 +36,11 @@ public abstract class AbstractGameManager<T extends ConnectionGame> {
     public abstract void createBotGame(ICorePlayer corePlayer);
 
     public T game(ICorePlayer corePlayer) {
-        return this.games.getOrDefault(corePlayer, null);
+        return this.games.get(corePlayer);
     }
 
     public void removeGame(ICorePlayer... corePlayers) {
-        for (ICorePlayer corePlayer : corePlayers) {
-            this.games.remove(corePlayer);
-        }
+        Arrays.asList(corePlayers).forEach(this.games.keySet()::remove);
     }
 
 }

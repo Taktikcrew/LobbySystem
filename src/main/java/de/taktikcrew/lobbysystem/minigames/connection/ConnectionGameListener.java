@@ -20,13 +20,13 @@ public class ConnectionGameListener {
 
     private final Component prefix;
 
-    public ConnectionGameListener(AbstractGameManager<?> gameManager) {
+    protected ConnectionGameListener(AbstractGameManager<?> gameManager) {
         this.gameManager = gameManager;
 
         this.prefix = this.gameManager.prefix();
     }
 
-    public void handleInventoryClickEvent(InventoryClickEvent event) {
+    protected void handleInventoryClickEvent(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) {
             return;
         }
@@ -140,7 +140,7 @@ public class ConnectionGameListener {
         connectionGame.place(corePlayer, connectionGame.type().animated() ? event.getSlot() % 9 : event.getSlot());
     }
 
-    public void handleInventoryCloseEvent(InventoryCloseEvent event) {
+    protected void handleInventoryCloseEvent(InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) {
             return;
         }
@@ -180,7 +180,7 @@ public class ConnectionGameListener {
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, 1, 1);
     }
 
-    public void handlePlayerQuitEvent(PlayerQuitEvent event) {
+    protected void handlePlayerQuitEvent(PlayerQuitEvent event) {
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(event.getPlayer());
         var connectionGame = this.gameManager.game(corePlayer);
 
