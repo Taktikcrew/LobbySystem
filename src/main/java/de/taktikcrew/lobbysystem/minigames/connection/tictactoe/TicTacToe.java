@@ -10,19 +10,22 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class TicTacToe extends ConnectionGame {
 
-    public TicTacToe(AbstractGameManager<?> abstractGameManager, List<ICorePlayer> players, boolean botMatch) {
+    private final Random random = new Random();
+
+    protected TicTacToe(AbstractGameManager<?> abstractGameManager, List<ICorePlayer> players, boolean botMatch) {
         super(abstractGameManager, Type.TIC_TAC_TOE, players, botMatch);
     }
 
     @Override
-    public void place(ICorePlayer corePlayer, int slot) {
+    protected void place(ICorePlayer corePlayer, int slot) {
         var item = ItemBuilder.of(this.skin(corePlayer)).name(corePlayer.displayName()).build();
         for (var inventory : this.players().values()) {
             inventory.setItem(slot, item);
@@ -37,44 +40,46 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    public boolean isPlaceable(int slot) {
-        var placeableSlots = new int[]{12, 13, 14, 21, 22, 23, 30, 31, 32};
-        return Arrays.binarySearch(placeableSlots, slot) >= 0;
+    protected boolean isPlaceable(int slot) {
+        return Set.of(12, 13, 14, 21, 22, 23, 30, 31, 32).contains(slot);
     }
 
     @Override
-    public List<Integer> checkHorizontal(Inventory inventory, Material skin, int slot) {
-        List<Integer> slots = Lists.newArrayList();
-        if (slot == 12 || slot == 13 || slot == 14) {
-            for (int i : new int[]{12, 13, 14}) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            }
-        } else if (slot == 21 || slot == 22 || slot == 23) {
-            for (int i : new int[]{21, 22, 23}) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            }
-        } else if (slot == 30 || slot == 31 || slot == 32) {
-            for (int i : new int[]{30, 31, 32}) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            }
+    protected int botMove() {
+        var slots = new int[]{12, 13, 14, 21, 22, 23, 30, 31, 32};
+        var slot = slots[this.random.nextInt(9)];
+        while (this.players().get(this.turn()).getItem(slot) != null) {
+            slot = slots[this.random.nextInt(9)];
         }
-        return slots;
+        return slot;
+    }
+
+    private List<Integer> checkLine(Inventory inventory, Material skin, int... slots) {
+        List<Integer> validSlots = Lists.newArrayList();
+        for (var slot : slots) {
+            var item = inventory.getItem(slot);
+            if (item == null || !item.getType().equals(skin)) {
+                break;
+            }
+            validSlots.add(slot);
+        }
+        return validSlots;
     }
 
     @Override
-    public List<Integer> checkVertical(Inventory inventory, Material skin, int slot) {
+    protected List<Integer> checkHorizontal(Inventory inventory, Material skin, int slot) {
+        if (slot == 12 || slot == 13 || slot == 14) {
+            return this.checkLine(inventory, skin, 12, 13, 14);
+        } else if (slot == 21 || slot == 22 || slot == 23) {
+            return this.checkLine(inventory, skin, 21, 22, 23);
+        } else if (slot == 30 || slot == 31 || slot == 32) {
+            return this.checkLine(inventory, skin, 30, 31, 32);
+        }
+        return Lists.newArrayList();
+    }
+
+    @Override
+    protected List<Integer> checkVertical(Inventory inventory, Material skin, int slot) {
         List<Integer> slots = Lists.newArrayList();
         if (slot == 12 || slot == 21 || slot == 30) {
             for (int i : new int[]{12, 21, 30}) {
@@ -105,7 +110,7 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    public List<Integer> checkDiagonalLeftToRight(Inventory inventory, Material skin, int slot) {
+    protected List<Integer> checkDiagonalLeftToRight(Inventory inventory, Material skin, int slot) {
         List<Integer> slots = Lists.newArrayList();
         for (int i : new int[]{12, 22, 32}) {
             var item = inventory.getItem(i);
@@ -118,7 +123,7 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    public List<Integer> checkDiagonalRightToLeft(Inventory inventory, Material skin, int slot) {
+    protected List<Integer> checkDiagonalRightToLeft(Inventory inventory, Material skin, int slot) {
         List<Integer> slots = Lists.newArrayList();
         for (int i : new int[]{14, 22, 30}) {
             var item = inventory.getItem(i);
@@ -131,7 +136,7 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    public void changeExit(ICorePlayer corePlayer, Inventory inventory) {
+    protected void changeExit(ICorePlayer corePlayer, Inventory inventory) {
         inventory.setItem(44, ItemBuilder.of(Material.FIREWORK_ROCKET)
                 .name(Component.translatable("lobby.minigame.item.rematch.name"))
                 .lore(Component.translatable("lobby.minigame.item.rematch.lore"))
@@ -139,7 +144,7 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    public void changeGlass(ICorePlayer corePlayer, Inventory inventory) {
+    protected void changeGlass(@Nullable ICorePlayer corePlayer, Inventory inventory) {
         var gray = ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName().build();
         var turn = ItemBuilder.of(Material.YELLOW_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.turn.name")).build();
         var lose = ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.lose.name")).build();
@@ -187,31 +192,7 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    public void changeTurn() {
-        this.turn(this.otherPlayer(this.turn()));
-        for (var corePlayer : this.players().keySet()) {
-            var inventory = this.players().get(corePlayer);
-            if (inventory.firstEmpty() != -1) {
-                this.changeGlass(corePlayer, inventory);
-            } else {
-                this.draw();
-                return;
-            }
-        }
-        if (this.botMatch() && this.turn().name().equals("Bot")) {
-            int[] slots = new int[]{12, 13, 14, 21, 22, 23, 30, 31, 32};
-            var random = new Random();
-            var slot = slots[random.nextInt(9)];
-            while (this.players().get(this.turn()).getItem(slot) != null) {
-                slot = slots[random.nextInt(9)];
-            }
-            this.place(this.turn(), slot);
-        }
-        this.schedule();
-    }
-
-    @Override
-    public void changeTime() {
+    protected void changeTime() {
         for (var inventory : this.players().values()) {
             inventory.setItem(36, ItemBuilder.of(Material.CLOCK)
                     .amount(this.time())
@@ -222,7 +203,7 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    public Inventory createInventory(ICorePlayer corePlayer, ICorePlayer opponent) {
+    protected Inventory createInventory(ICorePlayer corePlayer, ICorePlayer opponent) {
         return InventoryBuilder.of(Component.translatable("minigame.menu.game.title")
                         .arguments(this.type().gameName(), opponent.displayName()), 6)
 

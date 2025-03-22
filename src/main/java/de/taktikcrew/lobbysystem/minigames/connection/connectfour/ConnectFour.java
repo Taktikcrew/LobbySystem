@@ -5,8 +5,6 @@ import de.smoofy.core.api.builder.ItemBuilder;
 import de.smoofy.core.api.player.ICorePlayer;
 import de.taktikcrew.lobbysystem.minigames.AbstractGameManager;
 import de.taktikcrew.lobbysystem.minigames.connection.ConnectionGame;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -16,22 +14,24 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.List;
 import java.util.Random;
 
-@Getter
-@Accessors(fluent = true)
 public class ConnectFour extends ConnectionGame {
 
-    public ConnectFour(AbstractGameManager<?> abstractGameManager, List<ICorePlayer> players, boolean botMatch) {
+    private final Random random = new Random();
+
+    private int lastSlot;
+
+    protected ConnectFour(AbstractGameManager<?> abstractGameManager, List<ICorePlayer> players, boolean botMatch) {
         super(abstractGameManager, Type.CONNECT_FOUR, players, botMatch);
     }
 
     @Override
-    public void place(ICorePlayer corePlayer, int slot) {
+    protected void place(ICorePlayer corePlayer, int slot) {
         this.animation(true);
 
         var item = ItemBuilder.of(this.skin(corePlayer)).name(corePlayer.displayName()).build();
-        this.lastSlot(slot);
+        this.lastSlot = slot;
         for (var inventory : this.players().values()) {
-            inventory.setItem(this.lastSlot(), item);
+            inventory.setItem(this.lastSlot, item);
             this.changeGlass(null, inventory);
         }
 
@@ -40,34 +40,43 @@ public class ConnectFour extends ConnectionGame {
             public void run() {
                 var inventories = players().values().toArray(new Inventory[]{});
                 var inventory = inventories[0];
-                if (inventory.getSize() > lastSlot() + 9 && inventory.getItem(lastSlot() + 9) == null) {
-                    if (inventory.getItem(lastSlot()) != null) {
+                if (inventory.getSize() > lastSlot + 9 && inventory.getItem(lastSlot + 9) == null) {
+                    if (inventory.getItem(lastSlot) != null) {
                         for (var inventory2 : inventories) {
-                            inventory2.setItem(lastSlot(), null);
+                            inventory2.setItem(lastSlot, null);
                         }
                     }
                     for (var inventory2 : inventories) {
-                        inventory2.setItem(lastSlot() + 9, item);
+                        inventory2.setItem(lastSlot + 9, item);
                     }
-                    lastSlot(lastSlot() + 9);
+                    lastSlot = lastSlot + 9;
                 } else {
-                    if (!checkWon(inventory, item.getType(), lastSlot())) {
+                    if (!checkWon(inventory, item.getType(), lastSlot)) {
                         animation(false);
                         changeTurn();
                     }
                     cancel();
                 }
             }
-        }.runTaskTimer(this.abstractGameManager().lobby(), 10, 10);
+        }.runTaskTimer(this.abstractGameManager().lobby(), 5, 5);
     }
 
     @Override
-    public boolean isPlaceable(int slot) {
+    protected boolean isPlaceable(int slot) {
         return slot % 9 > 0;
     }
 
     @Override
-    public List<Integer> checkHorizontal(Inventory inventory, Material skin, int slot) {
+    protected int botMove() {
+        var slot = this.random.nextInt(7) + 1;
+        while (this.players().get(this.turn()).getItem(slot) != null) {
+            slot = this.random.nextInt(7) + 1;
+        }
+        return slot;
+    }
+
+    @Override
+    protected List<Integer> checkHorizontal(Inventory inventory, Material skin, int slot) {
         var y = slot / 9;
         List<Integer> slots = Lists.newArrayList();
         slots.add(slot);
@@ -106,7 +115,7 @@ public class ConnectFour extends ConnectionGame {
     }
 
     @Override
-    public List<Integer> checkVertical(Inventory inventory, Material skin, int slot) {
+    protected List<Integer> checkVertical(Inventory inventory, Material skin, int slot) {
         List<Integer> slots = Lists.newArrayList();
         slots.add(slot);
 
@@ -144,7 +153,7 @@ public class ConnectFour extends ConnectionGame {
     }
 
     @Override
-    public List<Integer> checkDiagonalLeftToRight(Inventory inventory, Material skin, int slot) {
+    protected List<Integer> checkDiagonalLeftToRight(Inventory inventory, Material skin, int slot) {
         List<Integer> slots = Lists.newArrayList();
         slots.add(slot);
 
@@ -182,7 +191,7 @@ public class ConnectFour extends ConnectionGame {
     }
 
     @Override
-    public List<Integer> checkDiagonalRightToLeft(Inventory inventory, Material skin, int slot) {
+    protected List<Integer> checkDiagonalRightToLeft(Inventory inventory, Material skin, int slot) {
         List<Integer> slots = Lists.newArrayList();
         slots.add(slot);
 
@@ -220,7 +229,7 @@ public class ConnectFour extends ConnectionGame {
     }
 
     @Override
-    public void changeExit(ICorePlayer corePlayer, Inventory inventory) {
+    protected void changeExit(ICorePlayer corePlayer, Inventory inventory) {
         inventory.setItem(53, ItemBuilder.of(Material.FIREWORK_ROCKET)
                 .name(Component.translatable("lobby.minigame.item.rematch.name"))
                 .lore(Component.translatable("lobby.minigame.item.rematch.lore"))
@@ -228,7 +237,7 @@ public class ConnectFour extends ConnectionGame {
     }
 
     @Override
-    public void changeGlass(ICorePlayer corePlayer, Inventory inventory) {
+    protected void changeGlass(ICorePlayer corePlayer, Inventory inventory) {
         var gray = ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName().build();
         var turn = ItemBuilder.of(Material.YELLOW_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.turn.name")).build();
         var lose = ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.lose.name")).build();
@@ -278,30 +287,7 @@ public class ConnectFour extends ConnectionGame {
     }
 
     @Override
-    public void changeTurn() {
-        this.turn(this.otherPlayer(this.turn()));
-        for (var corePlayer : this.players().keySet()) {
-            var inventory = this.players().get(corePlayer);
-            if (inventory.firstEmpty() != -1) {
-                this.changeGlass(corePlayer, inventory);
-            } else {
-                this.draw();
-                return;
-            }
-        }
-        if (this.botMatch() && this.turn().name().equals("Bot")) {
-            var random = new Random();
-            var slot = random.nextInt(7) + 1;
-            while (this.players().get(this.turn()).getItem(slot) != null) {
-                slot = random.nextInt(7) + 1;
-            }
-            this.place(this.turn(), slot);
-        }
-        this.schedule();
-    }
-
-    @Override
-    public void changeTime() {
+    protected void changeTime() {
         for (var inventory : this.players().values()) {
             inventory.setItem(45, ItemBuilder.of(Material.CLOCK)
                     .amount(this.time())

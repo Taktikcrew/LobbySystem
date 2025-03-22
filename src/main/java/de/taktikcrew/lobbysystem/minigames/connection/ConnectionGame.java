@@ -29,30 +29,30 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 @Getter
-@Setter
 @Accessors(fluent = true)
 public abstract class ConnectionGame {
 
     private final AbstractGameManager<?> abstractGameManager;
     private final Type type;
 
-    private Component prefix;
+    private final Component prefix;
 
-    private Map<ICorePlayer, Inventory> players;
-    private Map<ICorePlayer, Material> playerSkin;
+    private final Map<ICorePlayer, Inventory> players;
+    private final Map<ICorePlayer, Material> playerSkin;
 
     private ICorePlayer turn;
-    private boolean botMatch;
+    private final boolean botMatch;
     private boolean started;
+    @Setter
     private boolean finished;
 
-    private int lastSlot;
+    @Setter
     private boolean animation;
-    private BukkitTask animationTask;
 
     private BukkitTask bukkitTask;
     private int time;
 
+    @Setter
     private ICorePlayer rematch;
 
     public ConnectionGame(AbstractGameManager<?> abstractGameManager, Type type, List<ICorePlayer> players, boolean botMatch) {
@@ -74,25 +74,42 @@ public abstract class ConnectionGame {
         this.createInventories(players);
     }
 
-    public abstract void place(ICorePlayer corePlayer, int slot);
+    protected abstract void place(ICorePlayer corePlayer, int slot);
 
-    public abstract boolean isPlaceable(int slot);
+    protected abstract boolean isPlaceable(int slot);
 
-    public abstract List<Integer> checkHorizontal(Inventory inventory, Material skin, int slot);
+    protected abstract int botMove();
 
-    public abstract List<Integer> checkVertical(Inventory inventory, Material skin, int slot);
+    protected abstract List<Integer> checkHorizontal(Inventory inventory, Material skin, int slot);
 
-    public abstract List<Integer> checkDiagonalLeftToRight(Inventory inventory, Material skin, int slot);
+    protected abstract List<Integer> checkVertical(Inventory inventory, Material skin, int slot);
 
-    public abstract List<Integer> checkDiagonalRightToLeft(Inventory inventory, Material skin, int slot);
+    protected abstract List<Integer> checkDiagonalLeftToRight(Inventory inventory, Material skin, int slot);
 
-    public abstract void changeExit(ICorePlayer corePlayer, Inventory inventory);
+    protected abstract List<Integer> checkDiagonalRightToLeft(Inventory inventory, Material skin, int slot);
 
-    public abstract void changeGlass(ICorePlayer corePlayer, Inventory inventory);
+    protected abstract void changeExit(ICorePlayer corePlayer, Inventory inventory);
 
-    public abstract void changeTurn();
+    protected abstract void changeGlass(ICorePlayer corePlayer, Inventory inventory);
 
-    public abstract void changeTime();
+    protected abstract void changeTime();
+
+    protected void changeTurn() {
+        this.turn = this.otherPlayer(this.turn);
+        for (var corePlayer : this.players().keySet()) {
+            var inventory = this.players().get(corePlayer);
+            if (inventory.firstEmpty() != -1) {
+                this.changeGlass(corePlayer, inventory);
+            } else {
+                this.draw();
+                return;
+            }
+        }
+        if (this.botMatch() && this.turn().name().equals("Bot")) {
+            this.place(this.turn, this.botMove());
+        }
+        this.schedule();
+    }
 
     protected boolean checkWon(Inventory inventory, Material skin, int slot) {
         return Stream.of(
@@ -106,8 +123,8 @@ public abstract class ConnectionGame {
         }).orElse(false);
     }
 
-    public void finish(List<Integer> slots) {
-        this.finished(true);
+    private void finish(List<Integer> slots) {
+        this.finished = true;
         for (var corePlayer : this.players.keySet()) {
             var otherPlayer = this.otherPlayer(corePlayer);
 
@@ -130,8 +147,8 @@ public abstract class ConnectionGame {
         }
     }
 
-    public void draw() {
-        this.finished(true);
+    private void draw() {
+        this.finished = true;
         for (var corePlayer : this.players.keySet()) {
             var otherPlayer = this.otherPlayer(corePlayer);
             corePlayer.message(this.prefix.append(Component.translatable("minigame.message.draw")
@@ -142,7 +159,7 @@ public abstract class ConnectionGame {
         }
     }
 
-    public @NotNull ICorePlayer otherPlayer(ICorePlayer corePlayer) {
+    protected @NotNull ICorePlayer otherPlayer(ICorePlayer corePlayer) {
         for (var otherPlayer : this.players.keySet()) {
             if (!otherPlayer.equals(corePlayer)) {
                 return otherPlayer;
@@ -151,7 +168,7 @@ public abstract class ConnectionGame {
         return new DummyCorePlayer();
     }
 
-    public void changeWinnerItem(Inventory inventory, int slot) {
+    private void changeWinnerItem(Inventory inventory, int slot) {
         var item = inventory.getItem(slot);
         if (item == null) {
             return;
@@ -171,11 +188,6 @@ public abstract class ConnectionGame {
         this.time = 15;
         this.changeTime();
         this.bukkitTask = Core.instance().coreTask().repeat(() -> {
-            if (this.animation && this.animationTask != null) {
-                this.animationTask.cancel();
-                return;
-            }
-
             this.time--;
             this.changeTime();
 
@@ -200,7 +212,7 @@ public abstract class ConnectionGame {
         }, 20, 20);
     }
 
-    public void selectSkin(ICorePlayer corePlayer, int slot, Material material) {
+    protected void selectSkin(ICorePlayer corePlayer, int slot, Material material) {
         this.playerSkin.put(corePlayer, material);
         for (var inventory : this.players.values()) {
             inventory.setItem(slot, ItemBuilder.of(Material.BARRIER)
@@ -208,13 +220,13 @@ public abstract class ConnectionGame {
                     .build());
         }
         if (this.playerSkin.containsKey(this.otherPlayer(corePlayer))) {
-            this.started(true);
+            this.started = true;
             this.createInventories(Arrays.asList(this.players.keySet().toArray(new ICorePlayer[]{})));
             this.changeTurn();
         }
     }
 
-    protected void createInventories(List<ICorePlayer> players) {
+    private void createInventories(List<ICorePlayer> players) {
         if (this.started) {
             this.players.put(players.getFirst(), this.createInventory(players.getFirst(), players.get(1)));
             this.players.put(players.get(1), this.createInventory(players.get(1), players.getFirst()));
@@ -233,7 +245,7 @@ public abstract class ConnectionGame {
         }
     }
 
-    public Inventory createInventory(ICorePlayer corePlayer, ICorePlayer opponent) {
+    protected Inventory createInventory(ICorePlayer corePlayer, ICorePlayer opponent) {
         return InventoryBuilder.of(Component.translatable("minigame.menu.game.title")
                         .arguments(this.type.gameName, opponent.displayName()), 6)
 
@@ -246,7 +258,7 @@ public abstract class ConnectionGame {
                 .build();
     }
 
-    public void createRematchInventories() {
+    protected void createRematchInventories() {
         for (var corePlayer : this.players.keySet()) {
             if (!this.rematch.equals(corePlayer)) {
                 this.players.put(corePlayer, this.createRematchInventory(this.rematch, false));
@@ -319,7 +331,7 @@ public abstract class ConnectionGame {
                 .build();
     }
 
-    public Material skin(ICorePlayer corePlayer) {
+    protected Material skin(ICorePlayer corePlayer) {
         return this.playerSkin.get(corePlayer);
     }
 
