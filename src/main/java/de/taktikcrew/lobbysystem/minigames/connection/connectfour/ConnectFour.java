@@ -51,7 +51,7 @@ public class ConnectFour extends ConnectionGame {
                     }
                     lastSlot = lastSlot + 9;
                 } else {
-                    if (!checkWon(inventory, item.getType(), lastSlot)) {
+                    if (noWinnerExists(inventory, item.getType(), lastSlot)) {
                         animation(false);
                         changeTurn();
                     }
@@ -85,13 +85,7 @@ public class ConnectFour extends ConnectionGame {
             if (i / 9 != y || i < 1) {
                 break;
             }
-            if (i % 9 > 0 && i % 9 < 8) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            } else {
+            if (this.checkPattern(inventory, skin, slots, i)) {
                 break;
             }
         }
@@ -100,13 +94,7 @@ public class ConnectFour extends ConnectionGame {
             if (i / 9 != y || i > 53) {
                 break;
             }
-            if (i % 9 > 0 && i % 9 < 8) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            } else {
+            if (this.checkPattern(inventory, skin, slots, i)) {
                 break;
             }
         }
@@ -119,17 +107,11 @@ public class ConnectFour extends ConnectionGame {
         List<Integer> slots = Lists.newArrayList();
         slots.add(slot);
 
-        for (int i = (slot - 9); i < (slot - (5 * 9)); i -= 9) {
+        for (int i = (slot - 9); i > (slot - (5 * 9)); i -= 9) {
             if (i < 0) {
                 break;
             }
-            if (i % 9 > 0 && i % 9 < 8) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            } else {
+            if (this.checkPattern(inventory, skin, slots, i)) {
                 break;
             }
         }
@@ -138,13 +120,7 @@ public class ConnectFour extends ConnectionGame {
             if (i > 53) {
                 break;
             }
-            if (i % 9 > 0 && i % 9 < 8) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            } else {
+            if (this.checkPattern(inventory, skin, slots, i)) {
                 break;
             }
         }
@@ -161,13 +137,7 @@ public class ConnectFour extends ConnectionGame {
             if (i < 0) {
                 break;
             }
-            if (i % 9 > 0 && i % 9 < 8) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            } else {
+            if (this.checkPattern(inventory, skin, slots, i)) {
                 break;
             }
         }
@@ -176,13 +146,7 @@ public class ConnectFour extends ConnectionGame {
             if (i > 53) {
                 break;
             }
-            if (i % 9 > 0 && i % 9 < 8) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            } else {
+            if (this.checkPattern(inventory, skin, slots, i)) {
                 break;
             }
         }
@@ -199,13 +163,7 @@ public class ConnectFour extends ConnectionGame {
             if (i < 0) {
                 break;
             }
-            if (i % 9 > 0 && i % 9 < 8) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            } else {
+            if (this.checkPattern(inventory, skin, slots, i)) {
                 break;
             }
         }
@@ -214,18 +172,25 @@ public class ConnectFour extends ConnectionGame {
             if (i > 53) {
                 break;
             }
-            if (i % 9 > 0 && i % 9 < 8) {
-                var item = inventory.getItem(i);
-                if (item == null || !item.getType().equals(skin)) {
-                    break;
-                }
-                slots.add(i);
-            } else {
+            if (this.checkPattern(inventory, skin, slots, i)) {
                 break;
             }
         }
 
         return slots;
+    }
+
+    private boolean checkPattern(Inventory inventory, Material skin, List<Integer> slots, int i) {
+        if (i % 9 > 0 && i % 9 < 8) {
+            var item = inventory.getItem(i);
+            if (item == null || !item.getType().equals(skin)) {
+                return true;
+            }
+            slots.add(i);
+        } else {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -238,49 +203,44 @@ public class ConnectFour extends ConnectionGame {
 
     @Override
     protected void changeGlass(ICorePlayer corePlayer, Inventory inventory) {
-        var gray = ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName().build();
-        var turn = ItemBuilder.of(Material.YELLOW_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.turn.name")).build();
-        var lose = ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.lose.name")).build();
-        var win = ItemBuilder.of(Material.LIME_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.win.name")).build();
-
         if (this.finished()) {
             if (!corePlayer.equals(this.turn())) {
                 for (var slot : new int[]{0, 9, 36}) {
-                    inventory.setItem(slot, lose);
+                    inventory.setItem(slot, this.loseItem());
                 }
                 for (var slot : new int[]{8, 17, 44}) {
-                    inventory.setItem(slot, win);
+                    inventory.setItem(slot, this.winItem());
                 }
             } else {
                 for (var slot : new int[]{0, 9, 36}) {
-                    inventory.setItem(slot, win);
+                    inventory.setItem(slot, this.loseItem());
                 }
                 for (var slot : new int[]{8, 17, 44}) {
-                    inventory.setItem(slot, lose);
+                    inventory.setItem(slot, this.loseItem());
                 }
             }
             this.changeExit(corePlayer, inventory);
         } else if (this.animation()) {
             for (var slot : new int[]{0, 8, 9, 36, 45, 17, 44}) {
-                inventory.setItem(slot, gray);
+                inventory.setItem(slot, this.placeHolderItem());
             }
         } else {
             if (!corePlayer.equals(this.turn())) {
                 for (var slot : new int[]{0, 9, 36}) {
-                    inventory.setItem(slot, gray);
+                    inventory.setItem(slot, this.placeHolderItem());
                 }
                 for (var slot : new int[]{8, 17, 44}) {
-                    inventory.setItem(slot, turn);
+                    inventory.setItem(slot, this.turnItem());
                 }
             } else {
                 corePlayer.bukkitPlayer().ifPresent(player ->
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1));
 
                 for (var slot : new int[]{0, 9, 36}) {
-                    inventory.setItem(slot, turn);
+                    inventory.setItem(slot, this.turnItem());
                 }
                 for (var slot : new int[]{8, 17, 44}) {
-                    inventory.setItem(slot, gray);
+                    inventory.setItem(slot, this.placeHolderItem());
                 }
             }
         }

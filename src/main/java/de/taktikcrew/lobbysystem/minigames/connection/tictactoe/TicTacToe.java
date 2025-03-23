@@ -34,7 +34,7 @@ public class TicTacToe extends ConnectionGame {
 
         var inventories = this.players().values().toArray(new Inventory[]{});
         var inventory = inventories[0];
-        if (!checkWon(inventory, item.getType(), slot)) {
+        if (noWinnerExists(inventory, item.getType(), slot)) {
             this.changeTurn();
         }
     }
@@ -145,46 +145,41 @@ public class TicTacToe extends ConnectionGame {
 
     @Override
     protected void changeGlass(@Nullable ICorePlayer corePlayer, Inventory inventory) {
-        var gray = ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName().build();
-        var turn = ItemBuilder.of(Material.YELLOW_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.turn.name")).build();
-        var lose = ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.lose.name")).build();
-        var win = ItemBuilder.of(Material.LIME_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.win.name")).build();
-
         if (corePlayer != null) {
             if (this.finished()) {
                 if (!corePlayer.equals(this.turn())) {
                     for (var slot : new int[]{0, 9}) {
-                        inventory.setItem(slot, lose);
+                        inventory.setItem(slot, this.loseItem());
                     }
                     for (var slot : new int[]{8, 17}) {
-                        inventory.setItem(slot, win);
+                        inventory.setItem(slot, this.winItem());
                     }
                 } else {
                     for (var slot : new int[]{0, 9}) {
-                        inventory.setItem(slot, win);
+                        inventory.setItem(slot, this.winItem());
                     }
                     for (var slot : new int[]{8, 17}) {
-                        inventory.setItem(slot, lose);
+                        inventory.setItem(slot, this.loseItem());
                     }
                 }
                 this.changeExit(corePlayer, inventory);
             } else {
                 if (!corePlayer.equals(this.turn())) {
                     for (var slot : new int[]{0, 9}) {
-                        inventory.setItem(slot, gray);
+                        inventory.setItem(slot, this.placeHolderItem());
                     }
                     for (var slot : new int[]{8, 17}) {
-                        inventory.setItem(slot, turn);
+                        inventory.setItem(slot, this.turnItem());
                     }
                 } else {
                     corePlayer.bukkitPlayer().ifPresent(player ->
                             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1));
 
                     for (var slot : new int[]{0, 9}) {
-                        inventory.setItem(slot, turn);
+                        inventory.setItem(slot, this.turnItem());
                     }
                     for (var slot : new int[]{8, 17}) {
-                        inventory.setItem(slot, gray);
+                        inventory.setItem(slot, this.placeHolderItem());
                     }
                 }
             }

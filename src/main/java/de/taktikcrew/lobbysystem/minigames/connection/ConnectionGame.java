@@ -19,6 +19,7 @@ import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,6 +55,11 @@ public abstract class ConnectionGame {
 
     @Setter
     private ICorePlayer rematch;
+
+    private final ItemStack placeHolderItem = ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName().build();
+    private final ItemStack turnItem = ItemBuilder.of(Material.YELLOW_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.turn.name")).build();
+    private final ItemStack loseItem = ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.lose.name")).build();
+    private final ItemStack winItem = ItemBuilder.of(Material.LIME_STAINED_GLASS_PANE).name(Component.translatable("lobby.minigame.item.win.name")).build();
 
     public ConnectionGame(AbstractGameManager<?> abstractGameManager, Type type, List<ICorePlayer> players, boolean botMatch) {
         this.abstractGameManager = abstractGameManager;
@@ -111,7 +117,7 @@ public abstract class ConnectionGame {
         this.schedule();
     }
 
-    protected boolean checkWon(Inventory inventory, Material skin, int slot) {
+    protected boolean noWinnerExists(Inventory inventory, Material skin, int slot) {
         return Stream.of(
                 this.checkVertical(inventory, skin, slot),
                 this.checkHorizontal(inventory, skin, slot),
