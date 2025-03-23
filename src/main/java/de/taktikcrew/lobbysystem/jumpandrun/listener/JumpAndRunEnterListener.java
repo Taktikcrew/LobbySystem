@@ -1,15 +1,12 @@
 package de.taktikcrew.lobbysystem.jumpandrun.listener;
 
-import de.smoofy.core.api.builder.ItemBuilder;
 import de.taktikcrew.lobbysystem.jumpandrun.JumpAndRunManager;
 import de.taktikcrew.lobbysystem.jumpandrun.events.JumpAndRunEnterEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.persistence.PersistentDataType;
 
 public class JumpAndRunEnterListener implements Listener {
 
@@ -42,14 +39,6 @@ public class JumpAndRunEnterListener implements Listener {
                 .append(this.miniMessage.deserialize(" <dark_gray>║ <gray>Checkpoints<dark_gray>: "))
                 .append(Component.text(jumpAndRun.checkpoints().size(), NamedTextColor.DARK_GREEN))));
 
-        corePlayer.inventory().addItem(ItemBuilder.of(Material.HEAVY_WEIGHTED_PRESSURE_PLATE)
-                .name(Component.translatable("lobby.jar.item.checkpoint.name"))
-                .namespacedKey(this.jumpAndRunManager.checkpointKey(), PersistentDataType.BOOLEAN, true)
-                .build());
-
-        corePlayer.inventory().addItem(ItemBuilder.of(Material.BARRIER)
-                .name(Component.translatable("lobby.jar.item.abort.name"))
-                .namespacedKey(this.jumpAndRunManager.abortKey(), PersistentDataType.BOOLEAN, true)
-                .build());
+        this.jumpAndRunManager.lobby().inventoryProvider().lobbyPlayerInventory().setJumpAndRunInventory(corePlayer);
     }
 }
