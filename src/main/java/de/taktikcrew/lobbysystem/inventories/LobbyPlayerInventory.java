@@ -9,13 +9,10 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class LobbyPlayerInventory {
 
-    private final InventoryProvider inventoryProvider;
-
     private final LobbyPlayerDAO lobbyPlayerDAO;
 
     public LobbyPlayerInventory(InventoryProvider inventoryProvider) {
-        this.inventoryProvider = inventoryProvider;
-        this.lobbyPlayerDAO = this.inventoryProvider.lobby().lobbyPlayerDAO();
+        this.lobbyPlayerDAO = inventoryProvider.lobby().lobbyPlayerDAO();
     }
 
     public void setLobbyInventory(ICorePlayer corePlayer) {
