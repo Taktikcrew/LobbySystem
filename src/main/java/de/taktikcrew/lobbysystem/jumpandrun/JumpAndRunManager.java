@@ -16,7 +16,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 
 import java.util.List;
 import java.util.Map;
@@ -31,9 +30,6 @@ public class JumpAndRunManager {
 
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final Component prefix;
-
-    private final NamespacedKey checkpointKey;
-    private final NamespacedKey abortKey;
 
     private final JumpAndRunDAO jumpAndRunDAO;
 
@@ -53,9 +49,6 @@ public class JumpAndRunManager {
         this.lobby = lobby;
 
         this.prefix = this.miniMessage.deserialize("<dark_gray>[<dark_green>JAR<dark_gray>] ");
-
-        this.checkpointKey = NamespacedKey.fromString("back_to_checkpoint");
-        this.abortKey = NamespacedKey.fromString("abort");
 
         this.jumpAndRunDAO = this.lobby.jumpAndRunDAO();
 

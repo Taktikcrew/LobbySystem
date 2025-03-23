@@ -2,6 +2,7 @@ package de.taktikcrew.lobbysystem.jumpandrun;
 
 import de.smoofy.core.api.Core;
 import de.smoofy.core.api.utils.Pair;
+import de.taktikcrew.lobbysystem.inventories.InventoryItemKeys;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -149,11 +150,11 @@ public class JumpAndRunListener implements Listener {
         }
 
         var persistentDataContainer = item.getItemMeta().getPersistentDataContainer();
-        if (persistentDataContainer.has(this.jumpAndRunManager.checkpointKey())) {
+        if (persistentDataContainer.has(InventoryItemKeys.JAR_CHECKPOINT.key())) {
             var jumpAndRunData = this.jumpAndRunManager.jumpAndRunData().get(corePlayer);
             jumpAndRunData.addFail();
             corePlayer.bukkitPlayer().ifPresent(player -> player.teleport(jumpAndRunData.checkpoint()));
-        } else if (persistentDataContainer.has(this.jumpAndRunManager.abortKey())) {
+        } else if (persistentDataContainer.has(InventoryItemKeys.JAR_ABORT.key())) {
             jumpAndRunManager.abortJumpAndRun(corePlayer);
         }
     }
