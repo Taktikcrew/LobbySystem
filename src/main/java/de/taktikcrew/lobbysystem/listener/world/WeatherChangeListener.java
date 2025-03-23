@@ -13,6 +13,9 @@ public class WeatherChangeListener implements Listener {
 
     @EventHandler
     public void onChange(WeatherChangeEvent event) {
+        if (!event.toWeatherState()) {
+            return;
+        }
         event.setCancelled(true);
     }
 }
