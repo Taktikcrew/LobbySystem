@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerJoinListener implements Listener {
 
@@ -24,7 +25,7 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
+    public void onJoin(@NotNull PlayerJoinEvent event) {
         var player = event.getPlayer();
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(player);
 

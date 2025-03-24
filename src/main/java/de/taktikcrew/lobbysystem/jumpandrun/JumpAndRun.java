@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +47,7 @@ public class JumpAndRun {
         this.playable = true;
     }
 
-    private String serialize(Location location) {
+    private @NotNull String serialize(Location location) {
         return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw();
     }
 
@@ -64,7 +65,7 @@ public class JumpAndRun {
         private final int id;
         private final NamedTextColor color;
 
-        public static Optional<Difficulty> byId(int id) {
+        public static @NotNull Optional<Difficulty> byId(int id) {
             return Arrays.stream(values()).filter(difficulty -> difficulty.id == id).findFirst();
         }
     }

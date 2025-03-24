@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.UUID;
@@ -16,12 +17,12 @@ public class PlayerMoveListener implements Listener {
 
     private final Map<UUID, Location> backTeleportLocation = Maps.newHashMap();
 
-    public PlayerMoveListener(Lobby lobby) {
+    public PlayerMoveListener(@NotNull Lobby lobby) {
         lobby.getServer().getPluginManager().registerEvents(this, lobby);
     }
 
     @EventHandler
-    public void onMove(PlayerMoveEvent event) {
+    public void onMove(@NotNull PlayerMoveEvent event) {
         var player = event.getPlayer();
         if (player.getLocation().getBlock().isSolid()) {
             this.backTeleportLocation.put(player.getUniqueId(), event.getFrom());

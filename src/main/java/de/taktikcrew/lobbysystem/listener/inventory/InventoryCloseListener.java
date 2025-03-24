@@ -6,6 +6,7 @@ import de.taktikcrew.lobbysystem.inventories.DsgvoInventory;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class InventoryCloseListener implements Listener {
 
@@ -18,7 +19,7 @@ public class InventoryCloseListener implements Listener {
     }
 
     @EventHandler
-    public void onClose(InventoryCloseEvent event) {
+    public void onClose(@NotNull InventoryCloseEvent event) {
         var player = event.getPlayer();
         if (event.getReason().equals(InventoryCloseEvent.Reason.PLUGIN)) {
             return;

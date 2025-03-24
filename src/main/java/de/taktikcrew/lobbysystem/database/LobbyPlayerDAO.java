@@ -1,6 +1,7 @@
 package de.taktikcrew.lobbysystem.database;
 
 import de.taktikcrew.lobbysystem.objects.LobbyPlayer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -11,7 +12,7 @@ public class LobbyPlayerDAO extends AbstractDatabaseDAO<LobbyPlayer, UUID> {
     }
 
     @Override
-    public void create(LobbyPlayer lobbyPlayer) {
+    public void create(@NotNull LobbyPlayer lobbyPlayer) {
         if (this.exists(lobbyPlayer.uuid())) {
             return;
         }
@@ -20,7 +21,7 @@ public class LobbyPlayerDAO extends AbstractDatabaseDAO<LobbyPlayer, UUID> {
     }
 
     @Override
-    public void update(LobbyPlayer lobbyPlayer) {
+    public void update(@NotNull LobbyPlayer lobbyPlayer) {
         this.repository().query().match(this.id(), lobbyPlayer.uuid()).update(lobbyPlayer);
     }
 }

@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
@@ -194,7 +195,7 @@ public class ConnectFour extends ConnectionGame {
     }
 
     @Override
-    protected void changeExit(ICorePlayer corePlayer, Inventory inventory) {
+    protected void changeExit(ICorePlayer corePlayer, @NotNull Inventory inventory) {
         inventory.setItem(53, ItemBuilder.of(Material.FIREWORK_ROCKET)
                 .name(Component.translatable("lobby.minigame.item.rematch.name"))
                 .lore(Component.translatable("lobby.minigame.item.rematch.lore"))

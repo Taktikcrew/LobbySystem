@@ -4,15 +4,16 @@ import de.taktikcrew.lobbysystem.Lobby;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class WeatherChangeListener implements Listener {
 
-    public WeatherChangeListener(Lobby lobby) {
+    public WeatherChangeListener(@NotNull Lobby lobby) {
         lobby.getServer().getPluginManager().registerEvents(this, lobby);
     }
 
     @EventHandler
-    public void onChange(WeatherChangeEvent event) {
+    public void onChange(@NotNull WeatherChangeEvent event) {
         if (!event.toWeatherState()) {
             return;
         }

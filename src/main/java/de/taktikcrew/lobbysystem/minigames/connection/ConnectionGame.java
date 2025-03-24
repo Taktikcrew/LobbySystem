@@ -174,7 +174,7 @@ public abstract class ConnectionGame {
         return new DummyCorePlayer();
     }
 
-    private void changeWinnerItem(Inventory inventory, int slot) {
+    private void changeWinnerItem(@NotNull Inventory inventory, int slot) {
         var item = inventory.getItem(slot);
         if (item == null) {
             return;
@@ -251,7 +251,7 @@ public abstract class ConnectionGame {
         }
     }
 
-    protected Inventory createInventory(ICorePlayer corePlayer, ICorePlayer opponent) {
+    protected Inventory createInventory(@NotNull ICorePlayer corePlayer, @NotNull ICorePlayer opponent) {
         return InventoryBuilder.of(Component.translatable("minigame.menu.game.title")
                         .arguments(this.type.gameName, opponent.displayName()), 6)
 
@@ -297,7 +297,7 @@ public abstract class ConnectionGame {
                 .build();
     }
 
-    private Inventory createSkinSelector(ICorePlayer corePlayer, ICorePlayer opponent) {
+    private Inventory createSkinSelector(@NotNull ICorePlayer corePlayer, @NotNull ICorePlayer opponent) {
         return InventoryBuilder.of(Component.translatable("minigame.menu.game.title")
                         .arguments(this.type.gameName, opponent.displayName()), 6)
 

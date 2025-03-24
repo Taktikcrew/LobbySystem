@@ -10,6 +10,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public class TicTacToe extends ConnectionGame {
         return slot;
     }
 
-    private List<Integer> checkLine(Inventory inventory, Material skin, int... slots) {
+    private @NotNull List<Integer> checkLine(Inventory inventory, Material skin, int... slots) {
         List<Integer> validSlots = Lists.newArrayList();
         for (var slot : slots) {
             var item = inventory.getItem(slot);
@@ -136,7 +137,7 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    protected void changeExit(ICorePlayer corePlayer, Inventory inventory) {
+    protected void changeExit(ICorePlayer corePlayer, @NotNull Inventory inventory) {
         inventory.setItem(44, ItemBuilder.of(Material.FIREWORK_ROCKET)
                 .name(Component.translatable("lobby.minigame.item.rematch.name"))
                 .lore(Component.translatable("lobby.minigame.item.rematch.lore"))
@@ -198,7 +199,7 @@ public class TicTacToe extends ConnectionGame {
     }
 
     @Override
-    protected Inventory createInventory(ICorePlayer corePlayer, ICorePlayer opponent) {
+    protected Inventory createInventory(@NotNull ICorePlayer corePlayer, @NotNull ICorePlayer opponent) {
         return InventoryBuilder.of(Component.translatable("minigame.menu.game.title")
                         .arguments(this.type().gameName(), opponent.displayName()), 6)
 

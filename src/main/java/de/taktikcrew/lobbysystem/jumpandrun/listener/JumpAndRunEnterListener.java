@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 public class JumpAndRunEnterListener implements Listener {
 
@@ -24,7 +25,7 @@ public class JumpAndRunEnterListener implements Listener {
     }
 
     @EventHandler
-    public void onEnter(JumpAndRunEnterEvent event) {
+    public void onEnter(@NotNull JumpAndRunEnterEvent event) {
         var corePlayer = event.corePlayer();
         var jumpAndRun = event.jumpAndRun();
 

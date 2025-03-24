@@ -6,15 +6,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDropItemEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityDropItemListener implements Listener {
 
-    public EntityDropItemListener(Lobby lobby) {
+    public EntityDropItemListener(@NotNull Lobby lobby) {
         lobby.getServer().getPluginManager().registerEvents(this, lobby);
     }
 
     @EventHandler
-    public void onDrop(EntityDropItemEvent event) {
+    public void onDrop(@NotNull EntityDropItemEvent event) {
         if (!(event.getEntity() instanceof Player player)) {
             return;
         }

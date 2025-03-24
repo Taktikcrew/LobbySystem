@@ -6,6 +6,7 @@ import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerGameModeChangeListener implements Listener {
 
@@ -18,7 +19,7 @@ public class PlayerGameModeChangeListener implements Listener {
     }
 
     @EventHandler
-    public void onGameModeChange(PlayerGameModeChangeEvent event) {
+    public void onGameModeChange(@NotNull PlayerGameModeChangeEvent event) {
         if (!event.getNewGameMode().equals(GameMode.SURVIVAL)) {
             return;
         }

@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemFlag;
+import org.jetbrains.annotations.NotNull;
 
 public class ConnectionGameListener {
 
@@ -26,7 +27,7 @@ public class ConnectionGameListener {
         this.prefix = this.gameManager.prefix();
     }
 
-    protected void handleInventoryClickEvent(InventoryClickEvent event) {
+    protected void handleInventoryClickEvent(@NotNull InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) {
             return;
         }
@@ -140,7 +141,7 @@ public class ConnectionGameListener {
         connectionGame.place(corePlayer, connectionGame.type().animated() ? event.getSlot() % 9 : event.getSlot());
     }
 
-    protected void handleInventoryCloseEvent(InventoryCloseEvent event) {
+    protected void handleInventoryCloseEvent(@NotNull InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) {
             return;
         }
@@ -180,7 +181,7 @@ public class ConnectionGameListener {
         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_DESTROY, 1, 1);
     }
 
-    protected void handlePlayerQuitEvent(PlayerQuitEvent event) {
+    protected void handlePlayerQuitEvent(@NotNull PlayerQuitEvent event) {
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(event.getPlayer());
         var connectionGame = this.gameManager.game(corePlayer);
 

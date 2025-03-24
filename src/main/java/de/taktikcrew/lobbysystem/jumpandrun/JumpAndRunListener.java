@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class JumpAndRunListener implements Listener {
 
@@ -27,7 +28,7 @@ public class JumpAndRunListener implements Listener {
     }
 
     @EventHandler
-    public void onMove(PlayerMoveEvent event) {
+    public void onMove(@NotNull PlayerMoveEvent event) {
         var player = event.getPlayer();
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(player);
         if (this.jumpAndRunManager.isInJumpAndRun(corePlayer)) {
@@ -65,7 +66,7 @@ public class JumpAndRunListener implements Listener {
     }
 
     @EventHandler
-    public void onChat(AsyncChatEvent event) {
+    public void onChat(@NotNull AsyncChatEvent event) {
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(event.getPlayer());
         if (this.jumpAndRunManager.notInSetup(corePlayer)) {
             return;
@@ -135,7 +136,7 @@ public class JumpAndRunListener implements Listener {
     }
 
     @EventHandler
-    public void onAct(PlayerInteractEvent event) {
+    public void onAct(@NotNull PlayerInteractEvent event) {
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(event.getPlayer());
         if (!this.jumpAndRunManager.isInJumpAndRun(corePlayer)) {
             return;

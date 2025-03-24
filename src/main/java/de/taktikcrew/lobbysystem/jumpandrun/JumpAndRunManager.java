@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,7 @@ public class JumpAndRunManager {
         return Optional.empty();
     }
 
-    public void sendDifficulties(ICorePlayer corePlayer) {
+    public void sendDifficulties(@NotNull ICorePlayer corePlayer) {
         corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.difficulty")));
         for (var difficulty : JumpAndRun.Difficulty.values()) {
             corePlayer.message(this.miniMessage.deserialize(" <dark_gray>» ")
@@ -120,11 +121,11 @@ public class JumpAndRunManager {
         }
     }
 
-    public boolean notInSetup(ICorePlayer corePlayer) {
+    public boolean notInSetup(@NotNull ICorePlayer corePlayer) {
         return !corePlayer.equals(this.setupSteps.key());
     }
 
-    public Location deserialize(String location) {
+    public Location deserialize(@NotNull String location) {
         String[] split = location.split(";");
         return new Location(Bukkit.getWorld(split[0]),
                 Double.parseDouble(split[1]),

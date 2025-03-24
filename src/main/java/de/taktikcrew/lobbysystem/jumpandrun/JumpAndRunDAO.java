@@ -1,6 +1,7 @@
 package de.taktikcrew.lobbysystem.jumpandrun;
 
 import de.taktikcrew.lobbysystem.database.AbstractDatabaseDAO;
+import org.jetbrains.annotations.NotNull;
 
 public class JumpAndRunDAO extends AbstractDatabaseDAO<JumpAndRun, String> {
 
@@ -9,7 +10,7 @@ public class JumpAndRunDAO extends AbstractDatabaseDAO<JumpAndRun, String> {
     }
 
     @Override
-    public void create(JumpAndRun jumpAndRun) {
+    public void create(@NotNull JumpAndRun jumpAndRun) {
         if (this.exists(jumpAndRun.name())) {
             return;
         }
@@ -18,7 +19,7 @@ public class JumpAndRunDAO extends AbstractDatabaseDAO<JumpAndRun, String> {
     }
 
     @Override
-    public void update(JumpAndRun jumpAndRun) {
+    public void update(@NotNull JumpAndRun jumpAndRun) {
         this.repository().query().match(this.id(), jumpAndRun.name()).update(jumpAndRun);
     }
 }

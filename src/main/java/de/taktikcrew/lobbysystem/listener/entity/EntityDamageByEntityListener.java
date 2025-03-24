@@ -6,15 +6,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class EntityDamageByEntityListener implements Listener {
 
-    public EntityDamageByEntityListener(Lobby lobby) {
+    public EntityDamageByEntityListener(@NotNull Lobby lobby) {
         lobby.getServer().getPluginManager().registerEvents(this, lobby);
     }
 
     @EventHandler
-    public void onDamage(EntityDamageByEntityEvent event) {
+    public void onDamage(@NotNull EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player) || !(event.getDamager() instanceof Player damager)) {
             return;
         }

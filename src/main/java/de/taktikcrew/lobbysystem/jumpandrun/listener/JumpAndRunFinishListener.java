@@ -9,6 +9,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 public class JumpAndRunFinishListener implements Listener {
 
@@ -26,7 +27,7 @@ public class JumpAndRunFinishListener implements Listener {
     }
 
     @EventHandler
-    public void onFinish(JumpAndRunFinishEvent event) {
+    public void onFinish(@NotNull JumpAndRunFinishEvent event) {
         var corePlayer = event.corePlayer();
         var jumpAndRunData = event.jumpAndRunData();
         var jumpAndRun = jumpAndRunData.jumpAndRun();
