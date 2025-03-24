@@ -10,12 +10,12 @@ import org.bukkit.plugin.Plugin;
 @Accessors(fluent = true)
 public enum InventoryItemKeys {
 
-    LOBBY_NAVIGATOR("navigator"),
-    LOBBY_PLAYER_HIDER("player_hider"),
-    LOBBY_GADGETS("gadgets"),
-    LOBBY_PROFILE("profile"),
-    LOBBY_NICK("nick"),
-    LOBBY_SILENT_HUB("silent_hub"),
+    NAVIGATOR("navigator"),
+    PLAYER_HIDER("player_hider"),
+    GADGETS("gadgets"),
+    PROFILE("profile"),
+    NICK("nick"),
+    SILENT_HUB("silent_hub"),
     JAR_CHECKPOINT("jar:back_to_checkpoint"),
     JAR_ABORT("jar:abort");
 

@@ -6,37 +6,38 @@ import de.taktikcrew.lobbysystem.database.LobbyPlayerDAO;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 public class LobbyPlayerInventory {
 
     private final LobbyPlayerDAO lobbyPlayerDAO;
 
-    public LobbyPlayerInventory(InventoryProvider inventoryProvider) {
+    public LobbyPlayerInventory(@NotNull InventoryProvider inventoryProvider) {
         this.lobbyPlayerDAO = inventoryProvider.lobby().lobbyPlayerDAO();
     }
 
-    public void setLobbyInventory(ICorePlayer corePlayer) {
+    public void setLobbyInventory(@NotNull ICorePlayer corePlayer) {
         corePlayer.inventory().clear();
 
         corePlayer.inventory().setItem(0, ItemBuilder.of(Material.COMPASS)
                 .name(Component.translatable("lobby.menu.player.item.navigator.name"))
-                .namespacedKey(InventoryItemKeys.LOBBY_NAVIGATOR.key(), PersistentDataType.BOOLEAN, true)
+                .namespacedKey(InventoryItemKeys.NAVIGATOR.key(), PersistentDataType.BOOLEAN, true)
                 .build());
 
         corePlayer.inventory().setItem(1, ItemBuilder.of(Material.FIREWORK_STAR)
                 .name(Component.translatable("lobby.menu.player.item.player_hider.name"))
-                .namespacedKey(InventoryItemKeys.LOBBY_PLAYER_HIDER.key(), PersistentDataType.BOOLEAN, true)
+                .namespacedKey(InventoryItemKeys.PLAYER_HIDER.key(), PersistentDataType.BOOLEAN, true)
                 .build());
 
         corePlayer.inventory().setItem(7, ItemBuilder.of(Material.CHEST)
                 .name(Component.translatable("lobby.menu.player.item.gadgets.name"))
-                .namespacedKey(InventoryItemKeys.LOBBY_GADGETS.key(), PersistentDataType.BOOLEAN, true)
+                .namespacedKey(InventoryItemKeys.GADGETS.key(), PersistentDataType.BOOLEAN, true)
                 .build());
 
         corePlayer.inventory().setItem(8, ItemBuilder.of(Material.PLAYER_HEAD)
                 .skullOwner(corePlayer)
                 .name(Component.translatable("lobby.menu.player.item.profile.name"))
-                .namespacedKey(InventoryItemKeys.LOBBY_PROFILE.key(), PersistentDataType.BOOLEAN, true)
+                .namespacedKey(InventoryItemKeys.PROFILE.key(), PersistentDataType.BOOLEAN, true)
                 .build());
 
         corePlayer.bukkitPlayer().ifPresent(player -> {
@@ -46,7 +47,7 @@ public class LobbyPlayerInventory {
 
             corePlayer.inventory().setItem(3, ItemBuilder.of(Material.NAME_TAG)
                     .name(Component.translatable("lobby.menu.player.item.nick.name"))
-                    .namespacedKey(InventoryItemKeys.LOBBY_NICK.key(), PersistentDataType.BOOLEAN, true)
+                    .namespacedKey(InventoryItemKeys.NICK.key(), PersistentDataType.BOOLEAN, true)
                     .build());
 
             if (!player.hasPermission("lobby.vip")) {
@@ -55,7 +56,7 @@ public class LobbyPlayerInventory {
 
             corePlayer.inventory().setItem(5, ItemBuilder.of(Material.TNT)
                     .name(Component.translatable("lobby.menu.player.item.silent_hub.name"))
-                    .namespacedKey(InventoryItemKeys.LOBBY_SILENT_HUB.key(), PersistentDataType.BOOLEAN, true)
+                    .namespacedKey(InventoryItemKeys.SILENT_HUB.key(), PersistentDataType.BOOLEAN, true)
                     .build());
         });
     }
