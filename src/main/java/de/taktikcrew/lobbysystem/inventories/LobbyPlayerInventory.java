@@ -13,7 +13,7 @@ public class LobbyPlayerInventory {
     private final LobbyPlayerDAO lobbyPlayerDAO;
 
     public LobbyPlayerInventory(@NotNull InventoryProvider inventoryProvider) {
-        this.lobbyPlayerDAO = inventoryProvider.lobby().lobbyPlayerDAO();
+        this.lobbyPlayerDAO = inventoryProvider.lobby().databaseProvider().lobbyPlayerDAO();
     }
 
     public void setLobbyInventory(@NotNull ICorePlayer corePlayer) {
