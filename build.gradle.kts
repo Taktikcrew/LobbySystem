@@ -38,7 +38,11 @@ dependencies {
 
     compileOnly(libs.luckperms)
 
-    compileOnly(libs.evelon)
+    implementation(libs.sadu.mariadb)
+    implementation(libs.sadu.data.source)
+    implementation(libs.sadu.queries)
+    implementation(libs.sadu.mappings)
+    implementation(libs.sadu.updater)
 
     annotationProcessor(libs.lombok)
     compileOnly(libs.lombok)

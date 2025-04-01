@@ -5,7 +5,7 @@ core = "1.0.3"
 
 luckperms = "5.4"
 
-evelon = "1.0.46-SNAPSHOT"
+sadu = "2.3.1"
 
 lombok = "1.18.36"
 
@@ -25,6 +25,10 @@ core = { group = "de.taktikcrew.core", name = "core-api", version.ref = "core" }
 
 luckperms = { group = "net.luckperms", name = "api", version.ref = "luckperms" }
 
-evelon = { group = "dev.httpmarco.evelon", name = "evelon-sql-mariadb", version.ref = "evelon" }
+sadu_mariadb = { group = "de.chojo.sadu", name = "sadu-mariadb", version.ref = "sadu" }
+sadu_data_source = { group = "de.chojo.sadu", name = "sadu-datasource", version.ref = "sadu" }
+sadu_queries = { group = "de.chojo.sadu", name = "sadu-queries", version.ref = "sadu" }
+sadu_mappings = { group = "de.chojo.sadu", name = "sadu-mapper", version.ref = "sadu" }
+sadu_updater = { group = "de.chojo.sadu", name = "sadu-updater", version.ref = "sadu" }
 
 lombok = { group = "org.projectlombok", name = "lombok", version.ref = "lombok" }

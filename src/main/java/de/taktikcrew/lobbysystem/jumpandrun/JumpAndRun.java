@@ -1,6 +1,9 @@
 package de.taktikcrew.lobbysystem.jumpandrun;
 
-import dev.httpmarco.evelon.PrimaryKey;
+import de.chojo.sadu.mapper.annotation.MappingProvider;
+import de.chojo.sadu.mapper.wrapper.Row;
+import de.chojo.sadu.queries.api.call.Call;
+import de.chojo.sadu.queries.api.query.Query;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +20,9 @@ import java.util.stream.Collectors;
 
 @Getter
 @Accessors(fluent = true)
+@AllArgsConstructor
 public class JumpAndRun {
 
-    @PrimaryKey
     private final String name;
     private final String builder;
 
@@ -47,8 +51,27 @@ public class JumpAndRun {
         this.playable = true;
     }
 
+    @MappingProvider({"name"})
+    public JumpAndRun(Row row) throws SQLException {
+        this.name = row.getString("name");
+        this.builder = row.getString("builder");
+        this.difficulty = Difficulty.valueOf(row.getString("difficulty"));
+        this.startLocation = row.getString("startLocation");
+        this.endLocation = row.getString("endLocation");
+        this.checkpoints = this.loadCheckpoints(this.name);
+        this.recordTime = row.getLong("recordTime");
+        this.playable = row.getBoolean("playable");
+    }
+
     private @NotNull String serialize(Location location) {
         return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw();
+    }
+
+    private List<String> loadCheckpoints(String name) {
+        return Query.query("SELECT * FROM JumpAndRun_checkpoints WHERE name = ?")
+                .single(Call.of().bind(name))
+                .map(row -> row.getString("checkpoint"))
+                .all();
     }
 
     @Getter
