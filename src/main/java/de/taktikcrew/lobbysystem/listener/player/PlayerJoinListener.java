@@ -19,7 +19,7 @@ public class PlayerJoinListener implements Listener {
 
     public PlayerJoinListener(Lobby lobby) {
         this.lobby = lobby;
-        this.lobbyPlayerDAO = this.lobby.lobbyPlayerDAO();
+        this.lobbyPlayerDAO = this.lobby.databaseProvider().lobbyPlayerDAO();
 
         this.lobby.getServer().getPluginManager().registerEvents(this, this.lobby);
     }
@@ -29,7 +29,7 @@ public class PlayerJoinListener implements Listener {
         var player = event.getPlayer();
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(player);
 
-        this.lobbyPlayerDAO.create(new LobbyPlayer(player.getUniqueId(), false));
+        this.lobbyPlayerDAO.create(new LobbyPlayer(player.getUniqueId()));
         var optionalLobbyPlayer = this.lobbyPlayerDAO.get(player.getUniqueId());
 
         if (optionalLobbyPlayer.isPresent()) {

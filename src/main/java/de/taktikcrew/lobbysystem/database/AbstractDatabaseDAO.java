@@ -1,50 +1,47 @@
 package de.taktikcrew.lobbysystem.database;
 
 import com.google.common.collect.Maps;
-import dev.httpmarco.evelon.MariaDbLayer;
-import dev.httpmarco.evelon.Repository;
+import de.chojo.sadu.mapper.wrapper.Row;
+import de.chojo.sadu.queries.api.query.Query;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Getter
 @Accessors(fluent = true)
+@RequiredArgsConstructor
 public abstract class AbstractDatabaseDAO<T, O> {
-
-    private final Repository<T> repository;
-
-    private final String id;
 
     private final Map<O, T> cache = Maps.newConcurrentMap();
 
-    public AbstractDatabaseDAO(Class<T> type, String id) {
-        this.repository = Repository.build(type).withLayer(MariaDbLayer.class).build();
-
-        this.id = id;
-    }
+    private final String tableName;
 
     public abstract void create(T t);
 
-    public abstract void update(T o);
+    public abstract void update(T t);
+
+    public abstract void delete(O o);
+
+    protected abstract T map(Row row) throws SQLException;
+
+    protected abstract Optional<T> getFromDatabase(O o);
+
+    protected abstract boolean existsInDatabase(O o);
 
     public Optional<T> get(O o) {
-        return Optional.ofNullable(this.cache.computeIfAbsent(o, _ ->
-                this.repository.query().match(this.id, o).findFirst()
-        ));
-    }
-
-    public List<T> getAll() {
-        return this.repository.query().find();
+        return Optional.ofNullable(this.cache.computeIfAbsent(o, key -> this.getFromDatabase(key).orElse(null)));
     }
 
     public boolean exists(O o) {
-        return this.repository.query().match(this.id, o).exists();
+        return this.cache.containsKey(o) || this.existsInDatabase(o);
     }
 
-    public void delete(O o) {
-        this.repository.query().match(this.id, o).delete();
+    public List<T> getAll() {
+        return Query.query("SELECT * FROM " + this.tableName).single().map(this::map).all();
     }
 }

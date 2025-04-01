@@ -12,7 +12,7 @@ public class PlayerQuitListener implements Listener {
     private final LobbyPlayerDAO lobbyPlayerDAO;
 
     public PlayerQuitListener(@NotNull Lobby lobby) {
-        this.lobbyPlayerDAO = lobby.lobbyPlayerDAO();
+        this.lobbyPlayerDAO = lobby.databaseProvider().lobbyPlayerDAO();
 
         lobby.getServer().getPluginManager().registerEvents(this, lobby);
     }
