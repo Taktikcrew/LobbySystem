@@ -51,7 +51,7 @@ public class JumpAndRunManager {
 
         this.prefix = this.miniMessage.deserialize("<dark_gray>[<dark_green>JAR<dark_gray>] ");
 
-        this.jumpAndRunDAO = this.lobby.jumpAndRunDAO();
+        this.jumpAndRunDAO = this.lobby.databaseProvider().jumpAndRunDAO();
 
         new JumpAndRunCommand(this);
         new JumpAndRunListener(this);
