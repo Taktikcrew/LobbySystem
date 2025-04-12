@@ -58,7 +58,7 @@ public class JumpAndRun {
         this.difficulty = Difficulty.valueOf(row.getString("difficulty"));
         this.startLocation = row.getString("startLocation");
         this.endLocation = row.getString("endLocation");
-        this.checkpoints = this.loadCheckpoints(this.name);
+        this.checkpoints = this.loadCheckpoints();
         this.recordTime = row.getLong("recordTime");
         this.playable = row.getBoolean("playable");
     }
@@ -67,9 +67,9 @@ public class JumpAndRun {
         return location.getWorld().getName() + ";" + location.getX() + ";" + location.getY() + ";" + location.getZ() + ";" + location.getYaw();
     }
 
-    private List<String> loadCheckpoints(String name) {
+    private List<String> loadCheckpoints() {
         return Query.query("SELECT * FROM JumpAndRun_checkpoints WHERE name = ?")
-                .single(Call.of().bind(name))
+                .single(Call.of().bind(this.name))
                 .map(row -> row.getString("checkpoint"))
                 .all();
     }

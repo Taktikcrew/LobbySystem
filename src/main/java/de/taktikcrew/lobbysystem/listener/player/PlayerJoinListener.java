@@ -2,8 +2,8 @@ package de.taktikcrew.lobbysystem.listener.player;
 
 import de.smoofy.core.api.Core;
 import de.taktikcrew.lobbysystem.Lobby;
-import de.taktikcrew.lobbysystem.database.LobbyPlayerDAO;
-import de.taktikcrew.lobbysystem.objects.LobbyPlayer;
+import de.taktikcrew.lobbysystem.lobbyplayer.LobbyPlayer;
+import de.taktikcrew.lobbysystem.lobbyplayer.LobbyPlayerDAO;
 import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -2,14 +2,12 @@ package de.taktikcrew.lobbysystem.jumpandrun;
 
 import de.smoofy.core.api.Core;
 import de.smoofy.core.api.utils.Pair;
-import de.taktikcrew.lobbysystem.inventories.InventoryItemKeys;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -132,31 +130,6 @@ public class JumpAndRunListener implements Listener {
                 corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.checkpoint")));
                 corePlayer.message(this.prefix.append(Component.translatable("jar.command.setup.create")));
             }
-        }
-    }
-
-    @EventHandler
-    public void onAct(@NotNull PlayerInteractEvent event) {
-        var corePlayer = Core.instance().corePlayerProvider().corePlayer(event.getPlayer());
-        if (!this.jumpAndRunManager.isInJumpAndRun(corePlayer)) {
-            return;
-        }
-
-        var item = event.getItem();
-        if (item == null) {
-            return;
-        }
-        if (item.getItemMeta() == null) {
-            return;
-        }
-
-        var persistentDataContainer = item.getItemMeta().getPersistentDataContainer();
-        if (persistentDataContainer.has(InventoryItemKeys.JAR_CHECKPOINT.key())) {
-            var jumpAndRunData = this.jumpAndRunManager.jumpAndRunData().get(corePlayer);
-            jumpAndRunData.addFail();
-            corePlayer.bukkitPlayer().ifPresent(player -> player.teleport(jumpAndRunData.checkpoint()));
-        } else if (persistentDataContainer.has(InventoryItemKeys.JAR_ABORT.key())) {
-            jumpAndRunManager.abortJumpAndRun(corePlayer);
         }
     }
 }

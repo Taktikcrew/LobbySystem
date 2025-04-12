@@ -1,7 +1,7 @@
 package de.taktikcrew.lobbysystem.listener.player;
 
 import de.taktikcrew.lobbysystem.Lobby;
-import de.taktikcrew.lobbysystem.database.LobbyPlayerDAO;
+import de.taktikcrew.lobbysystem.lobbyplayer.LobbyPlayerDAO;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
