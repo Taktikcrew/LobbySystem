@@ -2,42 +2,61 @@ package de.taktikcrew.lobbysystem.inventories;
 
 import de.smoofy.core.api.builder.ItemBuilder;
 import de.smoofy.core.api.player.ICorePlayer;
-import de.taktikcrew.lobbysystem.database.LobbyPlayerDAO;
+import de.taktikcrew.lobbysystem.jumpandrun.JumpAndRunManager;
+import de.taktikcrew.lobbysystem.lobbyplayer.LobbyPlayerDAO;
+import de.taktikcrew.lobbysystem.settings.meta.SettingKey;
+import de.taktikcrew.lobbysystem.settings.playerhider.PlayerHider;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class LobbyPlayerInventory {
 
     private final LobbyPlayerDAO lobbyPlayerDAO;
 
+    private final JumpAndRunManager jumpAndRunManager;
+
     public LobbyPlayerInventory(@NotNull InventoryProvider inventoryProvider) {
         this.lobbyPlayerDAO = inventoryProvider.lobby().databaseProvider().lobbyPlayerDAO();
+
+        this.jumpAndRunManager = inventoryProvider.lobby().jumpAndRunManager();
     }
 
     public void setLobbyInventory(@NotNull ICorePlayer corePlayer) {
+        var lobbyPlayer = this.lobbyPlayerDAO.get(corePlayer.uuid());
+        if (lobbyPlayer.isEmpty()) {
+            return;
+        }
+
         corePlayer.inventory().clear();
 
         corePlayer.inventory().setItem(0, ItemBuilder.of(Material.COMPASS)
                 .name(Component.translatable("lobby.menu.player.item.navigator.name"))
-                .namespacedKey(InventoryItemKeys.NAVIGATOR.key(), PersistentDataType.BOOLEAN, true)
                 .build());
 
-        corePlayer.inventory().setItem(1, ItemBuilder.of(Material.FIREWORK_STAR)
-                .name(Component.translatable("lobby.menu.player.item.player_hider.name"))
-                .namespacedKey(InventoryItemKeys.PLAYER_HIDER.key(), PersistentDataType.BOOLEAN, true)
-                .build());
+        var optionalSetting = lobbyPlayer.get().settingByKey(SettingKey.PLAYER_HIDER);
+        if (optionalSetting.isEmpty()) {
+            return;
+        }
+
+        if (!(optionalSetting.get() instanceof PlayerHider playerHider)) {
+            return;
+        }
+
+        switch (playerHider.state()) {
+            case SHOW_ALL -> playerHider.setShowAllItem(corePlayer);
+            case SHOW_VIP -> playerHider.setShowVipItem(corePlayer);
+            case SHOW_NONE -> playerHider.setShowNoneItem(corePlayer);
+        }
 
         corePlayer.inventory().setItem(7, ItemBuilder.of(Material.CHEST)
                 .name(Component.translatable("lobby.menu.player.item.gadgets.name"))
-                .namespacedKey(InventoryItemKeys.GADGETS.key(), PersistentDataType.BOOLEAN, true)
                 .build());
 
         corePlayer.inventory().setItem(8, ItemBuilder.of(Material.PLAYER_HEAD)
                 .skullOwner(corePlayer)
                 .name(Component.translatable("lobby.menu.player.item.profile.name"))
-                .namespacedKey(InventoryItemKeys.PROFILE.key(), PersistentDataType.BOOLEAN, true)
                 .build());
 
         corePlayer.bukkitPlayer().ifPresent(player -> {
@@ -47,7 +66,6 @@ public class LobbyPlayerInventory {
 
             corePlayer.inventory().setItem(3, ItemBuilder.of(Material.NAME_TAG)
                     .name(Component.translatable("lobby.menu.player.item.nick.name"))
-                    .namespacedKey(InventoryItemKeys.NICK.key(), PersistentDataType.BOOLEAN, true)
                     .build());
 
             if (!player.hasPermission("lobby.vip")) {
@@ -56,7 +74,6 @@ public class LobbyPlayerInventory {
 
             corePlayer.inventory().setItem(5, ItemBuilder.of(Material.TNT)
                     .name(Component.translatable("lobby.menu.player.item.silent_hub.name"))
-                    .namespacedKey(InventoryItemKeys.SILENT_HUB.key(), PersistentDataType.BOOLEAN, true)
                     .build());
         });
     }
@@ -66,12 +83,18 @@ public class LobbyPlayerInventory {
 
         corePlayer.inventory().setItem(0, ItemBuilder.of(Material.HEAVY_WEIGHTED_PRESSURE_PLATE)
                 .name(Component.translatable("lobby.jar.item.checkpoint.name"))
-                .namespacedKey(InventoryItemKeys.JAR_CHECKPOINT.key(), PersistentDataType.BOOLEAN, true)
+                .event("jar_back_to_checkpoint", PlayerInteractEvent.class, _ -> {
+                    var jumpAndRunData = this.jumpAndRunManager.jumpAndRunData().get(corePlayer);
+                    jumpAndRunData.addFail();
+                    corePlayer.bukkitPlayer().ifPresent(player -> player.teleport(jumpAndRunData.checkpoint()));
+                })
                 .build());
 
         corePlayer.inventory().setItem(8, ItemBuilder.of(Material.BARRIER)
                 .name(Component.translatable("lobby.jar.item.abort.name"))
-                .namespacedKey(InventoryItemKeys.JAR_ABORT.key(), PersistentDataType.BOOLEAN, true)
+                .event("jar_abort", PlayerInteractEvent.class, _ ->
+                        this.jumpAndRunManager.abortJumpAndRun(corePlayer)
+                )
                 .build());
     }
 }

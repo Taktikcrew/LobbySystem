@@ -1,10 +1,13 @@
-package de.taktikcrew.lobbysystem.database;
+package de.taktikcrew.lobbysystem.lobbyplayer;
 
 import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.chojo.sadu.queries.call.adapter.UUIDAdapter;
-import de.taktikcrew.lobbysystem.objects.LobbyPlayer;
+import de.taktikcrew.lobbysystem.database.AbstractDatabaseDAO;
+import de.taktikcrew.lobbysystem.settings.AbstractSetting;
+import de.taktikcrew.lobbysystem.settings.playerhider.PlayerHideState;
+import de.taktikcrew.lobbysystem.settings.playerhider.PlayerHider;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -29,7 +32,23 @@ public class LobbyPlayerDAO extends AbstractDatabaseDAO<LobbyPlayer, UUID> {
                 )
                 .insert();
 
+        this.createDefaultSettings(lobbyPlayer);
+
         this.cache().put(lobbyPlayer.uuid(), lobbyPlayer);
+    }
+
+    public void createDefaultSettings(LobbyPlayer lobbyPlayer) {
+        this.saveSetting(lobbyPlayer, new PlayerHider(lobbyPlayer.uuid(), PlayerHideState.SHOW_ALL));
+    }
+
+    public void saveSetting(LobbyPlayer lobbyPlayer, AbstractSetting<?> setting) {
+        Query.query("INSERT INTO LobbyPlayer_settings (uuid, setting, state) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE state = VALUES(state)")
+                .single(Call.of()
+                        .bind(lobbyPlayer.uuid(), UUIDAdapter.AS_STRING)
+                        .bind(setting.settingKey().key())
+                        .bind(setting.serialize())
+                )
+                .insert();
     }
 
     @Override
@@ -45,6 +64,8 @@ public class LobbyPlayerDAO extends AbstractDatabaseDAO<LobbyPlayer, UUID> {
                         .bind(lobbyPlayer.uuid(), UUIDAdapter.AS_STRING)
                 )
                 .update();
+
+        lobbyPlayer.settings().forEach(setting -> this.saveSetting(lobbyPlayer, setting));
     }
 
     @Override

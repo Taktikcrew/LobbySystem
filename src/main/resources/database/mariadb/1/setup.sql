@@ -4,6 +4,15 @@ CREATE TABLE IF NOT EXISTS LobbyPlayer
     dsgvoAccepted TINYINT(1)
 );
 
+CREATE TABLE IF NOT EXISTS LobbyPlayer_settings
+(
+    uuid    UUID        NOT NULL,
+    setting VARCHAR(32) NOT NULL,
+    state   TEXT,
+    FOREIGN KEY (uuid) REFERENCES LobbyPlayer (uuid) ON DELETE CASCADE,
+    UNIQUE KEY uuid_setting (uuid, setting)
+);
+
 CREATE TABLE IF NOT EXISTS JumpAndRun
 (
     name          VARCHAR(64) NOT NULL PRIMARY KEY,
