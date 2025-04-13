@@ -5,6 +5,7 @@ import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.chojo.sadu.queries.call.adapter.UUIDAdapter;
 import de.taktikcrew.lobbysystem.database.AbstractDatabaseDAO;
+import de.taktikcrew.lobbysystem.gadgets.AbstractGadget;
 import de.taktikcrew.lobbysystem.settings.AbstractSetting;
 import de.taktikcrew.lobbysystem.settings.playerhider.PlayerHideState;
 import de.taktikcrew.lobbysystem.settings.playerhider.PlayerHider;
@@ -51,6 +52,16 @@ public class LobbyPlayerDAO extends AbstractDatabaseDAO<LobbyPlayer, UUID> {
                 .insert();
     }
 
+    public void saveGadget(LobbyPlayer lobbyPlayer, AbstractGadget gadget) {
+        Query.query("INSERT INTO LobbyPlayer_gadgets (uuid, gadget, active) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE active = VALUES(active)")
+                .single(Call.of()
+                        .bind(lobbyPlayer.uuid(), UUIDAdapter.AS_STRING)
+                        .bind(gadget.name())
+                        .bind(gadget.active())
+                )
+                .insert();
+    }
+
     @Override
     public void update(LobbyPlayer lobbyPlayer) {
         if (!this.exists(lobbyPlayer.uuid())) {
@@ -66,6 +77,7 @@ public class LobbyPlayerDAO extends AbstractDatabaseDAO<LobbyPlayer, UUID> {
                 .update();
 
         lobbyPlayer.settings().forEach(setting -> this.saveSetting(lobbyPlayer, setting));
+        lobbyPlayer.gadgets().forEach(gadget -> this.saveGadget(lobbyPlayer, gadget));
     }
 
     @Override

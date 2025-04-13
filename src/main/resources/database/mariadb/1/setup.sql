@@ -13,6 +13,15 @@ CREATE TABLE IF NOT EXISTS LobbyPlayer_settings
     UNIQUE KEY uuid_setting (uuid, setting)
 );
 
+CREATE TABLE IF NOT EXISTS LobbyPlayer_gadgets
+(
+    uuid   UUID        NOT NULL,
+    gadget VARCHAR(32) NOT NULL,
+    active TINYINT(1)  NOT NULL DEFAULT 0,
+    FOREIGN KEY (uuid) REFERENCES LobbyPlayer (uuid) ON DELETE CASCADE,
+    UNIQUE KEY uuid_gadget (uuid, gadget)
+);
+
 CREATE TABLE IF NOT EXISTS JumpAndRun
 (
     name          VARCHAR(64) NOT NULL PRIMARY KEY,

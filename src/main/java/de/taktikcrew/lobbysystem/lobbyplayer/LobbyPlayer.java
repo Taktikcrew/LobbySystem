@@ -7,12 +7,17 @@ import de.chojo.sadu.mapper.wrapper.Row;
 import de.chojo.sadu.queries.api.call.Call;
 import de.chojo.sadu.queries.api.query.Query;
 import de.chojo.sadu.queries.call.adapter.UUIDAdapter;
+import de.taktikcrew.lobbysystem.gadgets.AbstractGadget;
+import de.taktikcrew.lobbysystem.gadgets.meta.GadgetFactory;
+import de.taktikcrew.lobbysystem.gadgets.meta.GadgetType;
 import de.taktikcrew.lobbysystem.settings.AbstractSetting;
 import de.taktikcrew.lobbysystem.settings.meta.SettingFactory;
 import de.taktikcrew.lobbysystem.settings.meta.SettingKey;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,6 +33,7 @@ public class LobbyPlayer {
     private final UUID uuid;
     private boolean dsgvoAccepted;
     private List<AbstractSetting<?>> settings = Lists.newArrayList();
+    private List<AbstractGadget> gadgets = Lists.newArrayList();
 
     public LobbyPlayer(UUID uuid) {
         this.uuid = uuid;
@@ -39,6 +45,15 @@ public class LobbyPlayer {
         this.uuid = row.get("uuid", StandardReader.UUID_FROM_STRING);
         this.dsgvoAccepted = row.getBoolean("dsgvoAccepted");
         this.settings = this.loadSettings();
+        this.gadgets = this.loadGadgets();
+    }
+
+    public Optional<Player> player() {
+        return Optional.ofNullable(Bukkit.getPlayer(this.uuid));
+    }
+
+    public Optional<AbstractGadget> activeGadget(GadgetType type) {
+        return this.gadgets.stream().filter(gadget -> gadget.active() && gadget.type().equals(type)).findFirst();
     }
 
     public Optional<AbstractSetting<?>> settingByKey(SettingKey settingKey) {
@@ -50,5 +65,12 @@ public class LobbyPlayer {
                 .single(Call.of().bind(this.uuid, UUIDAdapter.AS_STRING))
                 .map(row -> SettingFactory.settingOfKey(this.uuid, row.getString("setting"), row.getString("state")))
                 .all());
+    }
+
+    private List<AbstractGadget> loadGadgets() {
+        return Query.query("SELECT * FROM LobbyPlayer_gadgets WHERE uuid = ?")
+                .single(Call.of().bind(this.uuid, UUIDAdapter.AS_STRING))
+                .map(row -> GadgetFactory.gadget(row.getString("gadget"), row.getBoolean("active")))
+                .all();
     }
 }

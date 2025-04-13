@@ -2,6 +2,7 @@ package de.taktikcrew.lobbysystem.listener.player;
 
 import de.smoofy.core.api.Core;
 import de.taktikcrew.lobbysystem.Lobby;
+import de.taktikcrew.lobbysystem.gadgets.AbstractGadget;
 import de.taktikcrew.lobbysystem.lobbyplayer.LobbyPlayer;
 import de.taktikcrew.lobbysystem.lobbyplayer.LobbyPlayerDAO;
 import org.bukkit.GameMode;
@@ -29,6 +30,8 @@ public class PlayerJoinListener implements Listener {
         var player = event.getPlayer();
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(player);
 
+        corePlayer.inventory().clear();
+
         this.lobbyPlayerDAO.create(new LobbyPlayer(player.getUniqueId()));
         var optionalLobbyPlayer = this.lobbyPlayerDAO.get(player.getUniqueId());
 
@@ -43,6 +46,8 @@ public class PlayerJoinListener implements Listener {
 
                 return;
             }
+            Core.instance().coreTask().later(() -> lobbyPlayer.gadgets().stream().filter(AbstractGadget::active)
+                    .forEach(gadget -> lobby.gadgetManager().activateGadget(lobbyPlayer, gadget)), 1);
         }
         player.clearActivePotionEffects();
         player.setCollidable(false);
@@ -50,9 +55,11 @@ public class PlayerJoinListener implements Listener {
         if (player.hasPermission("lobby.fly")) {
             player.setAllowFlight(true);
         }
+        player.setHealth(20);
+        player.setFoodLevel(20);
         player.setLevel(0);
         player.setExp(0);
 
-        this.lobby.inventoryProvider().lobbyPlayerInventory().setLobbyInventory(corePlayer);
+        this.lobby.inventoryProvider().lobbyPlayerInventory().setLobbyInventory(corePlayer, false);
     }
 }

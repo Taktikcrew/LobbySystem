@@ -24,6 +24,6 @@ public class PlayerGameModeChangeListener implements Listener {
             return;
         }
         var corePlayer = Core.instance().corePlayerProvider().corePlayer(event.getPlayer());
-        this.lobby.inventoryProvider().lobbyPlayerInventory().setLobbyInventory(corePlayer);
+        this.lobby.inventoryProvider().lobbyPlayerInventory().setLobbyInventory(corePlayer, true);
     }
 }

@@ -23,13 +23,15 @@ public class LobbyPlayerInventory {
         this.jumpAndRunManager = inventoryProvider.lobby().jumpAndRunManager();
     }
 
-    public void setLobbyInventory(@NotNull ICorePlayer corePlayer) {
+    public void setLobbyInventory(@NotNull ICorePlayer corePlayer, boolean clearInventory) {
         var lobbyPlayer = this.lobbyPlayerDAO.get(corePlayer.uuid());
         if (lobbyPlayer.isEmpty()) {
             return;
         }
 
-        corePlayer.inventory().clear();
+        if (clearInventory) {
+            corePlayer.inventory().clear();
+        }
 
         corePlayer.inventory().setItem(0, ItemBuilder.of(Material.COMPASS)
                 .name(Component.translatable("lobby.menu.player.item.navigator.name"))
