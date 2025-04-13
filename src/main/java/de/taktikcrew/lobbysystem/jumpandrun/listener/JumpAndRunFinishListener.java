@@ -51,7 +51,7 @@ public class JumpAndRunFinishListener implements Listener {
                 .append(this.miniMessage.deserialize(" <dark_gray>║ <gray>Fails<dark_gray>: "))
                 .append(Component.text(jumpAndRunData.fails(), NamedTextColor.DARK_GREEN))));
 
-        this.jumpAndRunManager.lobby().inventoryProvider().lobbyPlayerInventory().setLobbyInventory(corePlayer);
+        this.jumpAndRunManager.lobby().inventoryProvider().lobbyPlayerInventory().setLobbyInventory(corePlayer, true);
 
         if (event.aborted()) {
             return;
