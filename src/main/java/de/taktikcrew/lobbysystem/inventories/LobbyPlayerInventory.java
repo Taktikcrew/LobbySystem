@@ -66,9 +66,15 @@ public class LobbyPlayerInventory {
                 return;
             }
 
-            corePlayer.inventory().setItem(3, ItemBuilder.of(Material.NAME_TAG)
-                    .name(Component.translatable("lobby.menu.player.item.nick.name"))
-                    .build());
+            if (corePlayer.autoNick()) {
+                corePlayer.inventory().setItem(3, ItemBuilder.of(Material.NAME_TAG)
+                        .name(Component.translatable("lobby.menu.player.item.nick_on.name"))
+                        .build());
+            } else {
+                corePlayer.inventory().setItem(3, ItemBuilder.of(Material.NAME_TAG)
+                        .name(Component.translatable("lobby.menu.player.item.nick_off.name"))
+                        .build());
+            }
 
             if (!player.hasPermission("lobby.vip")) {
                 return;
