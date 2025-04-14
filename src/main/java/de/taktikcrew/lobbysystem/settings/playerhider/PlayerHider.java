@@ -22,7 +22,7 @@ public class PlayerHider extends AbstractSetting<PlayerHideState> {
 
     private ItemStack playerHider(ICorePlayer corePlayer, String itemKey, Color color) {
         var item = ItemBuilder.of(Material.FIREWORK_STAR)
-                .name(Component.translatable("lobby.menu.player.item." + itemKey + ".name"))
+                .name(Component.translatable(itemKey))
                 .event("player_hider", PlayerInteractEvent.class, _ -> {
                     switch (this.state()) {
                         case SHOW_ALL -> this.setShowVipItem(corePlayer);
@@ -42,15 +42,15 @@ public class PlayerHider extends AbstractSetting<PlayerHideState> {
     }
 
     public void setShowAllItem(ICorePlayer corePlayer) {
-        corePlayer.inventory().setItem(1, this.playerHider(corePlayer, "player_hider_all", Color.LIME));
+        corePlayer.inventory().setItem(1, this.playerHider(corePlayer, "lobby.menu.player.item.player_hider_all.name", Color.LIME));
     }
 
     public void setShowVipItem(ICorePlayer corePlayer) {
-        corePlayer.inventory().setItem(1, this.playerHider(corePlayer, "player_hider_vip", Color.PURPLE));
+        corePlayer.inventory().setItem(1, this.playerHider(corePlayer, "lobby.menu.player.item.player_hider_vip.name", Color.PURPLE));
     }
 
     public void setShowNoneItem(ICorePlayer corePlayer) {
-        corePlayer.inventory().setItem(1, this.playerHider(corePlayer, "player_hider_none", Color.RED));
+        corePlayer.inventory().setItem(1, this.playerHider(corePlayer, "lobby.menu.player.item.player_hider_none.name", Color.RED));
     }
 
     @Override
