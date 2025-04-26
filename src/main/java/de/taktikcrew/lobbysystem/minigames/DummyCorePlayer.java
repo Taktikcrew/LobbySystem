@@ -90,12 +90,12 @@ public class DummyCorePlayer implements ICorePlayer {
     }
 
     @Override
-    public int nickState() {
-        return 0;
+    public boolean autoNick() {
+        return false;
     }
 
     @Override
-    public void nickState(int nickState) {
+    public void autoNick(boolean autoNick) {
 
     }
 
