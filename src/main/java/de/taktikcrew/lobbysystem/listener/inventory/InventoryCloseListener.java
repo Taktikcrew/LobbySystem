@@ -3,6 +3,7 @@ package de.taktikcrew.lobbysystem.listener.inventory;
 import de.smoofy.core.api.Core;
 import de.taktikcrew.lobbysystem.Lobby;
 import de.taktikcrew.lobbysystem.inventories.DsgvoInventory;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -20,7 +21,9 @@ public class InventoryCloseListener implements Listener {
 
     @EventHandler
     public void onClose(@NotNull InventoryCloseEvent event) {
-        var player = event.getPlayer();
+        if (!(event.getPlayer() instanceof Player player)) {
+            return;
+        }
         if (event.getReason().equals(InventoryCloseEvent.Reason.PLUGIN)) {
             return;
         }
