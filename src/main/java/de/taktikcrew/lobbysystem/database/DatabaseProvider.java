@@ -8,6 +8,7 @@ import de.chojo.sadu.mariadb.mapper.MariaDbMapper;
 import de.chojo.sadu.queries.api.configuration.QueryConfiguration;
 import de.chojo.sadu.updater.SqlUpdater;
 import de.smoofy.core.api.Core;
+import de.smoofy.core.api.config.IConfig;
 import de.smoofy.core.api.logger.enumeration.LogType;
 import de.taktikcrew.lobbysystem.Lobby;
 import de.taktikcrew.lobbysystem.jumpandrun.JumpAndRunDAO;
@@ -15,7 +16,9 @@ import de.taktikcrew.lobbysystem.lobbyplayer.LobbyPlayerDAO;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.bukkit.Bukkit;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -26,10 +29,14 @@ public class DatabaseProvider {
 
     private HikariDataSource dataSource;
 
+    private IConfig config;
+
     private final LobbyPlayerDAO lobbyPlayerDAO;
     private final JumpAndRunDAO jumpAndRunDAO;
 
     public DatabaseProvider() {
+        this.loadConfig();
+
         this.lobbyPlayerDAO = new LobbyPlayerDAO();
         this.jumpAndRunDAO = new JumpAndRunDAO();
     }
@@ -37,11 +44,11 @@ public class DatabaseProvider {
     public void create() {
         this.dataSource = DataSourceCreator.create(MariaDb.get())
                 .configure(config -> config
-                        .host("")
-                        .port(3306)
-                        .user("")
-                        .password("")
-                        .database("")
+                        .host(this.config.get("host", String.class))
+                        .port(this.config.get("port", Integer.class))
+                        .user(this.config.get("user", String.class))
+                        .password(this.config.get("password", String.class))
+                        .database(this.config.get("database", String.class))
                 )
                 .create()
                 .withMaximumPoolSize(3)
@@ -71,5 +78,18 @@ public class DatabaseProvider {
 
     public void close() {
         dataSource.close();
+    }
+
+    private void loadConfig() {
+        File directory = new File(Bukkit.getPluginsFolder().getAbsolutePath() + "/LobbySystem");
+        directory.mkdirs();
+        this.config = Core.instance().config(directory, "mariadb.json");
+        this.config.load();
+        this.config.addIfNotExists("host", "127.0.0.1");
+        this.config.addIfNotExists("port", 3306);
+        this.config.addIfNotExists("user", "root");
+        this.config.addIfNotExists("password", "root");
+        this.config.addIfNotExists("database", "test");
+        this.config.save();
     }
 }
