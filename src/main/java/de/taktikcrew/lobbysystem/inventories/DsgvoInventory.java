@@ -1,5 +1,6 @@
 package de.taktikcrew.lobbysystem.inventories;
 
+import de.smoofy.core.api.Core;
 import de.smoofy.core.api.builder.InventoryBuilder;
 import de.smoofy.core.api.builder.ItemBuilder;
 import de.taktikcrew.lobbysystem.lobbyplayer.LobbyPlayerDAO;
@@ -27,8 +28,7 @@ public class DsgvoInventory {
     public DsgvoInventory(@NotNull InventoryProvider inventoryProvider) {
         this.lobbyPlayerDAO = inventoryProvider.lobby().databaseProvider().lobbyPlayerDAO();
 
-        this.inventory = InventoryBuilder.of(new Holder(), Component.translatable("dsgvo.menu.title")
-                        .color(NamedTextColor.RED).decorate(TextDecoration.BOLD), 3)
+        this.inventory = InventoryBuilder.of(new Holder(), Component.translatable("dsgvo.menu.title"), 3)
                 
                 .fill(ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).noName())
 
@@ -44,6 +44,9 @@ public class DsgvoInventory {
                             player.closeInventory();
                             player.getActivePotionEffects().forEach(potionEffect ->
                                     player.removePotionEffect(potionEffect.getType()));
+
+                            var corePlayer = Core.instance().corePlayerProvider().corePlayer(player);
+                            inventoryProvider.lobbyPlayerInventory().setLobbyInventory(corePlayer, false);
                         }), 11)
 
                 .set(ItemBuilder.of(Material.BOOK)
