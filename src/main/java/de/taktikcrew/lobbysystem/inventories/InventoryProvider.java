@@ -12,11 +12,13 @@ public class InventoryProvider {
 
     private final DsgvoInventory dsgvoInventory;
     private final LobbyPlayerInventory lobbyPlayerInventory;
+    private final NavigationInventory navigationInventory;
 
     public InventoryProvider(Lobby lobby) {
         this.lobby = lobby;
 
         this.dsgvoInventory = new DsgvoInventory(this);
         this.lobbyPlayerInventory = new LobbyPlayerInventory(this);
+        this.navigationInventory = new NavigationInventory();
     }
 }

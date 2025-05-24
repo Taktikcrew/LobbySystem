@@ -13,14 +13,18 @@ import org.jetbrains.annotations.NotNull;
 
 public class LobbyPlayerInventory {
 
+    private final InventoryProvider inventoryProvider;
+
     private final LobbyPlayerDAO lobbyPlayerDAO;
 
     private final JumpAndRunManager jumpAndRunManager;
 
     public LobbyPlayerInventory(@NotNull InventoryProvider inventoryProvider) {
-        this.lobbyPlayerDAO = inventoryProvider.lobby().databaseProvider().lobbyPlayerDAO();
+        this.inventoryProvider = inventoryProvider;
 
-        this.jumpAndRunManager = inventoryProvider.lobby().jumpAndRunManager();
+        this.lobbyPlayerDAO = this.inventoryProvider.lobby().databaseProvider().lobbyPlayerDAO();
+
+        this.jumpAndRunManager = this.inventoryProvider.lobby().jumpAndRunManager();
     }
 
     public void setLobbyInventory(@NotNull ICorePlayer corePlayer, boolean clearInventory) {
@@ -35,6 +39,9 @@ public class LobbyPlayerInventory {
 
         corePlayer.inventory().setItem(0, ItemBuilder.of(Material.COMPASS)
                 .name(Component.translatable("lobby.menu.player.item.navigator.name"))
+                .event("lobby_inventory.navigator", PlayerInteractEvent.class, event -> {
+                    event.getPlayer().openInventory(this.inventoryProvider.navigationInventory().inventory());
+                })
                 .build());
 
         var optionalSetting = lobbyPlayer.get().settingByKey(SettingKey.PLAYER_HIDER);
