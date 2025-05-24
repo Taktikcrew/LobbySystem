@@ -10,6 +10,7 @@ import de.taktikcrew.lobbysystem.listener.block.BlockBreakListener;
 import de.taktikcrew.lobbysystem.listener.block.BlockPlaceListener;
 import de.taktikcrew.lobbysystem.listener.entity.EntityDamageByEntityListener;
 import de.taktikcrew.lobbysystem.listener.entity.EntityPickupItemListener;
+import de.taktikcrew.lobbysystem.listener.inventory.InventoryClickListener;
 import de.taktikcrew.lobbysystem.listener.inventory.InventoryCloseListener;
 import de.taktikcrew.lobbysystem.listener.player.*;
 import de.taktikcrew.lobbysystem.listener.world.FoodLevelChangeListener;
@@ -70,6 +71,7 @@ public class Lobby extends JavaPlugin {
         new PlayerDropItemListener(this);
         new EntityPickupItemListener(this);
 
+        new InventoryClickListener(this);
         new InventoryCloseListener(this);
 
         new PlayerGameModeChangeListener(this);
